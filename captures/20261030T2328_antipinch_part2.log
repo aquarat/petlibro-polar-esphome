@@ -1,0 +1,19 @@
+before: {'Lid state': 'open (sensor)', 'Lid fault': False, 'Lid anti-pinch tripped': False, 'Pet present (IR)': True, 'Feeder state': 'idle', 'Feeder last event': 'Feed finished: ok'}
++ 0.14s Feeder last event = Close requested (no feed running)
++ 0.14s Feeder state = waiting for pet to leave
++ 0.14s Pet present (IR) = False
++10.13s Lid state = closing
++10.13s Feeder state = closing lid
++11.16s Pet present (IR) = True
++11.16s Lid state = opening
++11.76s Pet present (IR) = False
++13.28s Lid state = open (sensor)
++13.28s Feeder last event = Pet in the way while closing: reopened (1)
++13.28s Feeder state = waiting for pet to leave
++23.29s Lid state = closing
++23.29s Feeder state = closing lid
++27.29s Lid state = closed (sensor)
++27.29s Feeder last event = Feed finished: ok
++27.29s Feeder state = idle
++27.29s Pet present (IR) = True
+after: {'Lid state': 'closed (sensor)', 'Lid fault': False, 'Lid anti-pinch tripped': False, 'Pet present (IR)': True, 'Feeder state': 'idle', 'Feeder last event': 'Feed finished: ok'}

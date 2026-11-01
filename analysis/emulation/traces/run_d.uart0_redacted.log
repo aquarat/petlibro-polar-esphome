@@ -1,0 +1,1573 @@
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5810,len:0x168c
+load:0x403cc710,len:0x934
+load:0x403ce710,len:0x2e48
+entry 0x403cc710
+I (2) boot: ESP-IDF v4.4.6-dirty 2nd stage bootloader
+I (5) boot: compile time 18:37:10
+I (12) boot: chip revision: v0.3
+I (20) boot.esp32c3: SPI Speed      : 80MHz
+I (23) boot.esp32c3: SPI Mode       : SLOW READ
+I (27) boot.esp32c3: SPI Flash Size : 4MB
+I (37) boot: Enabling RNG early entropy source...
+I (47) boot: Partition Table:
+I (48) boot: ## Label            Usage          Type ST Offset   Length
+I (50) boot:  0 nvs              WiFi data        01 02 00009000 00020000
+I (52) boot:  1 otadata          OTA data         01 00 00029000 00002000
+I (56) boot:  2 phy_init         RF data          01 01 0002b000 00001000
+I (60) boot:  3 ota_0            OTA app          00 10 00030000 001af000
+I (64) boot:  4 ota_1            OTA app          00 11 001e0000 001af000
+I (68) boot: End of partition table
+I (73) esp_image: segment 0: paddr=00030020 vaddr=3c0f0020 size=2be00h (179712) map
+I (298) esp_image: segment 1: paddr=0005be28 vaddr=3fc95600 size=02ec8h ( 11976) load
+I (312) esp_image: segment 2: paddr=0005ecf8 vaddr=40380000 size=01320h (  4896) load
+I (319) esp_image: segment 3: paddr=00060020 vaddr=42000020 size=ecb04h (969476) map
+I (1349) esp_image: segment 4: paddr=0014cb2c vaddr=40381320 size=14258h ( 82520) load
+I (1439) boot: Loaded app from partition at offset 0x30000
+I (1440) boot: Disabling RNG early entropy source...
+I (1445) cpu_start: Unicore app
+I (1447) cpu_start: Pro cpu up.
+I (1467) cpu_start: Pro cpu start user code
+I (1467) cpu_start: cpu freq: 160000000
+I (1468) cpu_start: Application information:
+I (1468) cpu_start: Project name:     AF109
+I (1468) cpu_start: App version:      2.0.38
+I (1469) cpu_start: Compile time:     Sep 25 2025 18:36:42
+I (1469) cpu_start: ELF file SHA256:  509a1e2d623af84c...
+I (1470) cpu_start: ESP-IDF:          v4.4.6-dirty
+I (1470) cpu_start: Min chip rev:     v0.3
+I (1471) cpu_start: Max chip rev:     v0.99 
+I (1471) cpu_start: Chip rev:         v0.3
+I (1472) heap_init: Initializing. RAM available for dynamic allocation:
+I (1473) heap_init: At 3FCA5280 len 00037490 (221 KiB): DRAM
+I (1474) heap_init: At 3FCDC710 len 00002950 (10 KiB): STACK/DRAM
+I (1474) heap_init: At 50000020 len 00001FE0 (7 KiB): RTCRAM
+I (1481) spi_flash: detected chip: gd
+I (1484) spi_flash: flash io: dio
+I (1488) sleep: Configure to isolate all GPIO pins in sleep state
+I (1489) sleep: Enable automatic switching of GPIO sleep configuration
+I (1491) coexist: coexist rom version 9387209
+I (1494) cpu_start: Starting scheduler.
+I (1499) Main_function: [APP] Startup..
+I (1501) Main_function: [APP] Free memory: 227388 bytes
+I (1502) Main_function: [APP] IDF version: v4.4.6-dirty
+I (1555) system_info: SYSYTEM_INFO_init systemInfoParam NULL
+I (1567) gpio: GPIO[9]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (1791) aw9523b: AW9523B_i2cInit id=0x23
+I (1827) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (1847) aw9523b: AW9523B_i2cInit P0_INPUT=0x1 DL_PRODUCT_HARDWARE_VERSION:5.2.0
+I (1864) BSP_init: Ptc_init: OK
+I (1887) BSP_init: Motor_init: OK
+I (1898) BSP_init: Door_Motor_init: OK
+I (1913) gpio: GPIO[18]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (1933) BSP_init: Key_init: ok!
+I (1950) BSP_init: AlarmLed_init: ok!
+I (1968) gpio: GPIO[10]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:4 
+I (1990) gpio: GPIO[19]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (2012) gpio: GPIO[20]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (2040) gpio: GPIO[0]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (2091) gpio: GPIO[4]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (2109) gpio: GPIO[1]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (2133) gpio: GPIO[3]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (2152) gpio: GPIO[5]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (2173) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (2196) BSP_init: BSP_aduioInit: OK
+I (2203) BSP_init: Function:Bsp_init
+I (2218) MQTT_INIT: wifi_mqtt_data_s.app_config_info_s.bindId:3 
+I (2225) MQTT_INIT: Update current UTC timestamp(ms): 0
+I (2228) MQTT_INIT: Mqtt_TimeInit Read_NvsBLob RTC_INFO_KEY success time_cnt=0
+I (2263) MQTT_INIT: Mqtt_TimeInit Write_NvsBLob RTC_INFO_KEY success time_cnt=0
+I (2269) MQTT_INIT: Mqtt_DataInit exist mqtt info
+I (2271) MQTT_INIT: Mqtt_DataInit read success
+I (2274) MQTT_INIT: dev_sn:<redacted>
+I (2276) MQTT_INIT: product_key:<redacted>
+I (2278) MQTT_INIT: product_secret:<redacted>
+I (2283) dev_attr: led_enable=1 led_mode=1
+I (2285) dev_attr: led_start_hour=0 led_start_min=0
+I (2287) dev_attr: led_end_hour=0 led_end_min=0
+I (2289) dev_attr: doorCheckSignalTime=5 doorNotcheckSignalTime=10
+I (2291) dev_attr: dev_attr_t=72 led_info_t=14 cool_info_t=14 sound_info_t=14
+I (2297) dev_attr: plateStuckCurrent=400 doorStuckCurrent=400
+I (2300) feed_plan: rear=0 front=0
+I (2303) feed_plan: feed_record_s empty
+I (2304) feed_plan: feed_err_record_s empty
+I (2306) feed_plan: Feed_DataInit normal i=0 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2309) feed_plan: Feed_DataInit normal i=1 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2312) feed_plan: Feed_DataInit normal i=2 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2314) feed_plan: Feed_DataInit normal i=3 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2317) feed_plan: Feed_DataInit normal i=4 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2319) feed_plan: Feed_DataInit normal i=5 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2322) feed_plan: Feed_DataInit normal i=6 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2324) feed_plan: Feed_DataInit normal i=7 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2327) feed_plan: Feed_DataInit normal i=8 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2329) feed_plan: Feed_DataInit normal i=9 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2332) feed_plan: Feed_DataInit normal i=10 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2334) feed_plan: Feed_DataInit normal i=11 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2336) feed_plan: Feed_DataInit normal i=12 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2339) feed_plan: Feed_DataInit normal i=13 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2341) feed_plan: Feed_DataInit normal i=14 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2343) feed_plan: Feed_DataInit normal i=15 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2345) feed_plan: Feed_DataInit normal i=16 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2348) feed_plan: Feed_DataInit normal i=17 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2350) feed_plan: Feed_DataInit normal i=18 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2352) feed_plan: Feed_DataInit normal i=19 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2354) feed_plan: Feed_DataInit normal i=20 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (2356) feed_plan: feed flash_feed_data_s.feed_plan_index 0: 
+I (2367) dl_rep_log: DL_REP_LOG_recLogInit, line:36, cnt=30 rear=15 front=16 size=31 DEV_LOG_RECORD_INFO_T=1504
+I (2369) Main_function: DataMananger_Init
+I (2370) Main_function: version:2.0.38
+I (2376) pp: pp rom version: 9387209
+I (2378) net80211: net80211 rom version: 9387209
+I (2382) wifi:wifi driver task: 3fcaf1f8, prio:23, stack:6656, core=0
+I (2388) system_api: Base MAC address is not set
+I (2390) system_api: read default base MAC address from EFUSE
+I (2392) system_api: Base MAC address is not set
+I (2393) system_api: read default base MAC address from EFUSE
+I (2409) wifi:wifi firmware version: 1ba8b6a
+I (2410) wifi:wifi certification version: v7.0
+I (2411) wifi:config NVS flash: enabled
+I (2412) wifi:config nano formating: disabled
+I (2413) wifi:Init data frame dynamic rx buffer num: 32
+I (2415) wifi:Init management frame dynamic rx buffer num: 32
+I (2416) wifi:Init management short buffer num: 32
+I (2417) wifi:Init dynamic tx buffer num: 32
+I (2419) wifi:Init static tx FG buffer num: 2
+I (2420) wifi:Init static rx buffer size: 1600
+I (2422) wifi:Init static rx buffer num: 10
+I (2423) wifi:Init dynamic rx buffer num: 32
+I (2426) wifi_init: rx ba win: 6
+I (2427) wifi_init: tcpip mbox: 32
+I (2427) wifi_init: udp mbox: 6
+I (2428) wifi_init: tcp mbox: 6
+I (2429) wifi_init: tcp tx win: 5744
+I (2430) wifi_init: tcp rx win: 5744
+I (2431) wifi_init: tcp mss: 1440
+I (2431) wifi_init: WiFi IRAM OP enabled
+I (2432) wifi_init: WiFi RX IRAM OP enabled
+I (2433) wifi_init: WiFi SLP IRAM OP enabled
+I (2435) ble_net: initialise_wifi enter ap mode
+
+I (2439) ble_net: Wifi_Config_Ap_Mode set custom ip addr success
+
+I (2441) system_api: Base MAC address is not set
+I (2441) system_api: read default base MAC address from EFUSE
+I (2452) ble_net: Bt_init mqtt_addr= port=0 user_id=0
+
+I (2454) ble_net: Ap_Config_Udp_Thread Socket created
+
+I (2458) dl_queue: gpio_task_example: start up
+I (2456) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (2472) dl_queue: Monitor_InterruptTask Timer_PlateErrHandle start
+I (2477) dl_queue: Monitor_QueueInit :ok
+I (2488) communicate_thread: Communicate_ThreadHandle res_stack = 3404
+
+I (2491) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (2495) control_thread: CTRL_THREAD_devModuleInit curr_plate_pos=1 set_plate_pos=1
+I (2503) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (2507) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_ZERO
+I (2514) dl_timer: DlTimer_Init :ok
+I (2515) ble_net: Ap_Config_Udp_Thread Socket bound, port 
+
+I (2517) Main_function: [APP] Free memory: 153056 bytes
+I (4252) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=16
+I (4262) dl_queue: GPIO[19] intr, val: 1
+
+I (4274) dl_queue: gpio_task_example res_stack = 708
+
+I (4279) dl_queue: gpio_task_example: start up
+I (4510) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (4569) dl_queue: Close_SW_Interrupt
+I (4585) control_thread: Device_Module_Ctrl PLATE_READY_SET_POS
+I (5106) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_CLOSING
+I (5139) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5203) dl_queue: MicroSw_DebounceHandle
+I (5720) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5754) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5773) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6302) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6325) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6341) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6868) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6895) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6917) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7439) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7467) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7489) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7810) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7960) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=17
+I (7968) dl_queue: GPIO[10] intr, val: 0
+
+I (7986) dl_queue: gpio_task_example res_stack = 692
+
+I (7993) dl_queue: gpio_task_example: start up
+I (7998) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8006) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8015) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8028) dl_queue: Close_SW_Interrupt
+I (8079) control_thread: Plate_Micro_Handle curr_plate_pos=2 set_plate_pos=1
+I (8084) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (8087) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8096) dl_queue: gpio_task_example max_time_diff111111=263
+
+I (8099) dl_queue: gpio_task_example curr_plate_is_cal=0 check_cnt=1
+
+I (8158) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=18
+I (8163) dl_queue: gpio_task_example d_time_cnt=330 current_time_diff=263 max_time_diff=263
+
+I (8246) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=19
+I (8251) dl_queue: GPIO[10] intr, val: 0
+
+I (8259) dl_queue: gpio_task_example res_stack = 660
+
+I (8261) dl_queue: gpio_task_example: start up
+I (8264) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8272) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8280) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8546) dl_queue: MicroSw_DebounceHandle
+I (8803) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8851) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8871) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9395) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9417) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9434) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9968) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10007) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10028) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10559) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10595) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10617) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11153) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11177) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11207) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11234) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11382) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=20
+I (11390) dl_queue: GPIO[10] intr, val: 0
+
+I (11399) dl_queue: gpio_task_example res_stack = 660
+
+I (11402) dl_queue: gpio_task_example: start up
+I (11405) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11415) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11424) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11441) dl_queue: Close_SW_Interrupt
+I (11514) control_thread: Plate_Micro_Handle curr_plate_pos=3 set_plate_pos=1
+I (11519) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (11522) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11530) dl_queue: gpio_task_example max_time_diff111111=274
+
+I (11533) dl_queue: gpio_task_example curr_plate_is_cal=0 check_cnt=2
+
+I (11607) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=21
+I (11612) dl_queue: gpio_task_example d_time_cnt=357 current_time_diff=274 max_time_diff=274
+
+I (11673) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=22
+I (11678) dl_queue: GPIO[10] intr, val: 0
+
+I (11685) dl_queue: gpio_task_example res_stack = 660
+
+I (11687) dl_queue: gpio_task_example: start up
+I (11970) dl_queue: MicroSw_DebounceHandle
+I (12200) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12235) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12261) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12796) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12819) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12835) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13350) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13389) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13410) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13939) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13977) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13998) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14525) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14589) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14729) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=23
+I (14736) dl_queue: GPIO[10] intr, val: 1
+
+I (14744) dl_queue: gpio_task_example res_stack = 660
+
+I (14749) dl_queue: gpio_task_example: start up
+I (14756) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14765) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15143) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15172) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15192) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15217) dl_queue: Close_SW_Interrupt
+I (15279) control_thread: Plate_Micro_Handle curr_plate_pos=1 set_plate_pos=1
+I (15284) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (15287) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15294) dl_queue: gpio_task_example max_time_diff111111=673
+
+I (15297) dl_queue: gpio_task_example max_time_diff222222222=673
+
+I (15299) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=3
+
+I (15375) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=24
+I (15380) dl_queue: gpio_task_example d_time_cnt=760 current_time_diff=673 max_time_diff=673
+
+I (15445) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=25
+I (15450) dl_queue: GPIO[10] intr, val: 0
+
+I (15457) dl_queue: gpio_task_example res_stack = 660
+
+I (15459) dl_queue: gpio_task_example: start up
+I (15464) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15468) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15475) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15749) dl_queue: MicroSw_DebounceHandle
+I (15986) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16015) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16039) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16571) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16607) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16632) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17172) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17231) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17251) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17786) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17813) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17839) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18296) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18460) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=26
+I (18467) dl_queue: GPIO[10] intr, val: 0
+
+I (18477) dl_queue: gpio_task_example res_stack = 660
+
+I (18481) dl_queue: gpio_task_example: start up
+I (18486) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18493) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18505) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18518) dl_queue: Close_SW_Interrupt
+I (18583) control_thread: Plate_Micro_Handle curr_plate_pos=2 set_plate_pos=1
+I (18589) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (18592) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18601) dl_queue: gpio_task_example max_time_diff111111=673
+
+I (18604) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (18684) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=27
+I (18690) dl_queue: gpio_task_example d_time_cnt=364 current_time_diff=275 max_time_diff=673
+
+I (18756) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=28
+I (18761) dl_queue: GPIO[10] intr, val: 0
+
+I (18768) dl_queue: gpio_task_example res_stack = 660
+
+I (18771) dl_queue: gpio_task_example: start up
+I (18774) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18781) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18788) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19043) dl_queue: MicroSw_DebounceHandle
+I (19300) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19371) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19406) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19935) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19965) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19981) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20506) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20548) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20569) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20606) MQTT_INIT: Local time is: Thu Jan  1 00:00:18 1970
+
+I (21107) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21141) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21171) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21695) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21727) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21751) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21786) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21916) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=29
+I (21922) dl_queue: GPIO[10] intr, val: 0
+
+I (21934) dl_queue: gpio_task_example res_stack = 660
+
+I (21937) dl_queue: gpio_task_example: start up
+I (21940) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21948) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21959) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21971) dl_queue: Close_SW_Interrupt
+I (22045) control_thread: Plate_Micro_Handle curr_plate_pos=3 set_plate_pos=1
+I (22051) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (22054) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22062) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (22125) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=30
+I (22130) dl_queue: gpio_task_example d_time_cnt=332 current_time_diff=264 max_time_diff=673
+
+I (22217) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=0
+I (22223) dl_queue: GPIO[10] intr, val: 0
+
+I (22231) dl_queue: gpio_task_example res_stack = 660
+
+I (22233) dl_queue: gpio_task_example: start up
+I (22525) dl_queue: MicroSw_DebounceHandle
+I (22746) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22770) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22792) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23327) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23348) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23363) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23903) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23939) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23961) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24486) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24514) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24536) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25064) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25091) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25112) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25171) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25293) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=1
+I (25300) dl_queue: GPIO[10] intr, val: 1
+
+I (25310) dl_queue: gpio_task_example res_stack = 660
+
+I (25314) dl_queue: gpio_task_example: start up
+I (25722) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25749) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25772) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25800) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25823) control_thread: Plate_Micro_Handle GPIO_MOTOR_BRAKE
+I (25837) MQTT_INIT: Report_StateChack Report_StateChack = 16
+
+I (25843) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (25849) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (25866) dl_queue: Close_SW_Interrupt
+I (25867) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (25886) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (25939) control_thread: Plate_Micro_Handle curr_plate_pos=1 set_plate_pos=1
+I (25944) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (25947) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (25955) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (26028) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=2
+I (26034) dl_queue: gpio_task_example d_time_cnt=841 current_time_diff=762 max_time_diff=673
+
+I (26121) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=3
+I (26126) dl_queue: GPIO[10] intr, val: 0
+
+I (26133) dl_queue: gpio_task_example res_stack = 660
+
+I (26135) dl_queue: gpio_task_example: start up
+I (26140) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (26148) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (26153) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_CLOSE_OVER
+I (26161) control_thread: PET_Info_Init rear=0 front=0
+I (26163) control_thread: PET_Info_Init pet_record empty
+I (26165) control_thread: PET_Info_Init i=0 PET_NEAR=0 PET_LEAVE=0
+I (26168) control_thread: PET_Info_Init i=1 PET_NEAR=0 PET_LEAVE=0
+I (26169) control_thread: PET_Info_Init i=2 PET_NEAR=0 PET_LEAVE=0
+I (26171) control_thread: PET_Info_Init i=3 PET_NEAR=0 PET_LEAVE=0
+I (26173) control_thread: PET_Info_Init i=4 PET_NEAR=0 PET_LEAVE=0
+I (26175) control_thread: PET_Info_Init i=5 PET_NEAR=0 PET_LEAVE=0
+I (26178) control_thread: PET_Info_Init i=6 PET_NEAR=0 PET_LEAVE=0
+I (26180) control_thread: PET_Info_Init i=7 PET_NEAR=0 PET_LEAVE=0
+I (26182) control_thread: PET_Info_Init i=8 PET_NEAR=0 PET_LEAVE=0
+I (26184) control_thread: PET_Info_Init i=9 PET_NEAR=0 PET_LEAVE=0
+I (26186) control_thread: PET_Info_Init i=10 PET_NEAR=0 PET_LEAVE=0
+I (26189) control_thread: PET_Info_Init i=11 PET_NEAR=0 PET_LEAVE=0
+I (26191) control_thread: PET_Info_Init i=12 PET_NEAR=0 PET_LEAVE=0
+I (26193) control_thread: PET_Info_Init i=13 PET_NEAR=0 PET_LEAVE=0
+I (26195) control_thread: PET_Info_Init i=14 PET_NEAR=0 PET_LEAVE=0
+I (26197) control_thread: PET_Info_Init i=15 PET_NEAR=0 PET_LEAVE=0
+W (26199) control_thread: Control_ThreadHandle start...
+I (26398) dl_queue: MicroSw_DebounceHandle
+I (26823) BSP_init: BSP_setExistState GPIO_EXIST_OFF
+I (26889) MQTT_INIT: Report_StateChack Report_StateChack = 10
+
+I (26898) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (26902) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (26913) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (26917) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (26923) dl_led: sitch to POWER_DC_MODE AP,open ap and ble
+I (27512) feed_plan: Feeding_Monitor lastFeedState=0
+I (28875) feed_plan: Feeding_Monitor lastFeedState=0
+I (30192) feed_plan: Feeding_Monitor lastFeedState=0
+I (31492) feed_plan: Feeding_Monitor lastFeedState=0
+I (32794) feed_plan: Feeding_Monitor lastFeedState=0
+I (34124) feed_plan: Feeding_Monitor lastFeedState=0
+I (35460) feed_plan: Feeding_Monitor lastFeedState=0
+I (36784) feed_plan: Feeding_Monitor lastFeedState=0
+I (38044) feed_plan: Feeding_Monitor lastFeedState=0
+I (39355) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (39389) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (39401) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (39408) feed_plan: Feeding_Monitor lastFeedState=0
+I (39453) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (39459) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (40531) MQTT_INIT: Local time is: Thu Jan  1 00:00:38 1970
+
+I (40707) feed_plan: Feeding_Monitor lastFeedState=0
+I (41954) dl_queue: open Timer_KeyRestoreHandle
+I (42090) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=4
+I (42098) dl_queue: GPIO[18] intr, val: 0
+
+I (42106) dl_queue: gpio_task_example res_stack = 660
+
+I (42109) dl_queue: gpio_task_example: start up
+I (42147) feed_plan: Feeding_Monitor lastFeedState=0
+I (42733) dl_queue: close Timer_KeyRestoreHandle
+I (42879) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=5
+I (42886) dl_queue: GPIO[18] intr, val: 1
+
+I (42894) dl_queue: gpio_task_example res_stack = 660
+
+I (42900) dl_queue: gpio_task_example: start up
+I (43597) feed_plan: Feeding_Monitor lastFeedState=0
+I (44868) feed_plan: Feeding_Monitor lastFeedState=0
+I (46198) feed_plan: Feeding_Monitor lastFeedState=0
+I (47517) feed_plan: Feeding_Monitor lastFeedState=0
+I (48850) feed_plan: Feeding_Monitor lastFeedState=0
+I (50154) feed_plan: Feeding_Monitor lastFeedState=0
+I (51457) feed_plan: Feeding_Monitor lastFeedState=0
+I (52089) dl_queue: Close_SW_Interrupt
+I (52105) control_thread: Device_Module_Ctrl PLATE_READY_SET_POS
+I (52616) dl_queue: MicroSw_DebounceHandle
+I (52790) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (52818) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (52833) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (53005) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=6
+I (53011) feed_plan: Feeding_Monitor repPlateCurrentState
+I (53013) feed_plan: Feeding_Monitor lastFeedState=0
+I (53058) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=2
+I (53069) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (54435) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=7
+I (54442) feed_plan: Feeding_Monitor repPlateCurrentState
+I (54444) feed_plan: Feeding_Monitor lastFeedState=0
+I (55046) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55218) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=8
+I (55224) dl_queue: GPIO[10] intr, val: 0
+
+I (55235) dl_queue: gpio_task_example res_stack = 660
+
+I (55238) dl_queue: gpio_task_example: start up
+I (55242) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55250) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55261) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55272) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55284) control_thread: Plate_Micro_Handle GPIO_MOTOR_BRAKE
+I (55295) MQTT_INIT: Report_StateChack Report_StateChack = 16
+
+I (55300) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (55303) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (55319) dl_queue: Close_SW_Interrupt
+I (55318) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (55336) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (55389) control_thread: Plate_Micro_Handle curr_plate_pos=2 set_plate_pos=2
+I (55394) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (55397) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (55405) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (55468) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=9
+I (55472) dl_queue: gpio_task_example d_time_cnt=410 current_time_diff=342 max_time_diff=673
+
+I (55554) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=10
+I (55560) dl_queue: GPIO[10] intr, val: 0
+
+I (55567) dl_queue: gpio_task_example res_stack = 660
+
+I (55569) dl_queue: gpio_task_example: start up
+I (55840) dl_queue: MicroSw_DebounceHandle
+I (56208) feed_plan: Feeding_Monitor lastFeedState=0
+I (57526) feed_plan: Feeding_Monitor lastFeedState=0
+I (58875) feed_plan: Feeding_Monitor lastFeedState=0
+I (60189) feed_plan: Feeding_Monitor lastFeedState=0
+I (60529) MQTT_INIT: Local time is: Thu Jan  1 00:00:58 1970
+
+I (61538) feed_plan: Feeding_Monitor lastFeedState=0
+I (62833) feed_plan: Feeding_Monitor lastFeedState=0
+I (64175) feed_plan: Feeding_Monitor lastFeedState=0
+I (65461) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (65484) feed_plan: Feeding_Monitor lastFeedState=0
+I (66753) control_thread: Device_Module_Ctrl DOOR_READY_OPEN
+I (66820) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (66826) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (66828) feed_plan: Feeding_Monitor lastFeedState=0
+I (66860) dl_led: Power_Handle curr_plate_pos=2 set_plate_pos=2
+I (66868) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (67404) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=11
+I (67412) dl_queue: GPIO[19] intr, val: 0
+
+I (67420) dl_queue: gpio_task_example res_stack = 660
+
+I (67426) dl_queue: gpio_task_example: start up
+I (68102) feed_plan: Feeding_Monitor lastFeedState=0
+I (69416) feed_plan: Feeding_Monitor lastFeedState=0
+I (70652) feed_plan: Feeding_Monitor lastFeedState=0
+I (71994) feed_plan: Feeding_Monitor lastFeedState=0
+I (73268) feed_plan: Feeding_Monitor lastFeedState=0
+I (74535) feed_plan: Feeding_Monitor lastFeedState=0
+I (75843) feed_plan: Feeding_Monitor lastFeedState=0
+I (77143) feed_plan: Feeding_Monitor lastFeedState=0
+I (78457) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (78485) feed_plan: Feeding_Monitor lastFeedState=0
+I (79804) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (79844) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (79858) feed_plan: Feeding_Monitor lastFeedState=0
+I (79933) dl_led: Power_Handle curr_plate_pos=2 set_plate_pos=2
+I (79949) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (80587) MQTT_INIT: Local time is: Thu Jan  1 00:01:18 1970
+
+I (81162) feed_plan: Feeding_Monitor lastFeedState=0
+I (82422) control_thread: Device_Module_Ctrl DOOR_READY_CLOSE
+I (82535) feed_plan: Feeding_Monitor lastFeedState=0
+I (83843) feed_plan: Feeding_Monitor lastFeedState=0
+I (84151) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=12
+I (84162) dl_queue: GPIO[19] intr, val: 1
+
+I (84174) dl_queue: gpio_task_example res_stack = 660
+
+I (84178) dl_queue: gpio_task_example: start up
+I (86164) MQTT_INIT: Report_StateChack Report_StateChack = 15
+
+I (86181) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (86187) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (86202) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (86208) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (86213) control_thread: Operate_Door_Protect DOOR_MOTOR_CLOSE_OVER
+I (86258) feed_plan: Feeding_Monitor lastFeedState=0
+I (87523) feed_plan: Feeding_Monitor lastFeedState=0
+I (88866) feed_plan: Feeding_Monitor lastFeedState=0
+I (90190) feed_plan: Feeding_Monitor lastFeedState=0
+I (91498) feed_plan: Feeding_Monitor lastFeedState=0
+I (92831) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (92854) feed_plan: Feeding_Monitor lastFeedState=0
+I (94186) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (94196) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (94205) feed_plan: Feeding_Monitor lastFeedState=0
+I (94249) dl_led: Power_Handle curr_plate_pos=2 set_plate_pos=2
+I (94262) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (95497) feed_plan: Feeding_Monitor lastFeedState=0
+I (96799) feed_plan: Feeding_Monitor lastFeedState=0
+I (98101) feed_plan: Feeding_Monitor lastFeedState=0
+I (99435) feed_plan: Feeding_Monitor lastFeedState=0
+I (100531) MQTT_INIT: Local time is: Thu Jan  1 00:01:38 1970
+
+I (100774) feed_plan: Feeding_Monitor lastFeedState=0
+I (102100) feed_plan: Feeding_Monitor lastFeedState=0
+I (103398) feed_plan: Feeding_Monitor lastFeedState=0
+I (104751) feed_plan: Feeding_Monitor lastFeedState=0
+I (106069) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (106101) feed_plan: Feeding_Monitor lastFeedState=0
+I (107423) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (107435) feed_plan: Feeding_Monitor plateStuckTimeout=2 doorStuckTimeout=0
+I (107444) feed_plan: Feeding_Monitor lastFeedState=0
+I (107499) dl_led: Power_Handle curr_plate_pos=2 set_plate_pos=2
+I (107507) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (108059) dl_queue: Close_SW_Interrupt
+I (108075) control_thread: Device_Module_Ctrl PLATE_READY_SET_POS
+I (108593) dl_queue: MicroSw_DebounceHandle
+I (108955) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=13
+I (108963) feed_plan: Feeding_Monitor repPlateCurrentState
+I (108966) feed_plan: Feeding_Monitor lastFeedState=0
+I (110224) feed_plan: Feeding_Monitor plateMotorState MOTOR_STUCK
+I (110402) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=14
+I (110408) feed_plan: Feeding_Monitor repPlateCurrentState
+I (110411) feed_plan: Feeding_Monitor lastFeedState=0
+I (112003) feed_plan: FEED_PLAN_plateHandle GPIO_MOTOR_BRAKE 
+I (112640) dl_queue: Close_SW_Interrupt
+I (112651) control_thread: Device_Module_Ctrl PLATE_READY_BACK_POS
+I (112721) feed_plan: Feeding_Monitor lastFeedState=0
+I (112740) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (112864) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=15
+I (112872) dl_queue: GPIO[10] intr, val: 0
+
+I (112883) dl_queue: gpio_task_example res_stack = 660
+
+I (112887) dl_queue: gpio_task_example: start up
+I (112892) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (112901) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (112914) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (112922) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (112926) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (112936) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (113047) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=16
+I (113053) dl_queue: gpio_task_example d_time_cnt=302 current_time_diff=185 max_time_diff=673
+
+I (113141) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=17
+I (113146) dl_queue: GPIO[10] intr, val: 0
+
+I (113154) dl_queue: gpio_task_example res_stack = 660
+
+I (113157) dl_queue: gpio_task_example: start up
+I (114422) feed_plan: FEED_PLAN_plateHandle plate motor restore
+I (114618) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=18
+I (114623) feed_plan: Feeding_Monitor repPlateCurrentState
+I (114625) feed_plan: Feeding_Monitor lastFeedState=0
+I (115872) feed_plan: Feeding_Monitor plateMotorState MOTOR_STUCK
+I (116008) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116135) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=20
+I (116140) dl_queue: GPIO[10] intr, val: 1
+
+I (116147) dl_queue: gpio_task_example res_stack = 660
+
+I (116149) dl_queue: gpio_task_example: start up
+I (116153) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:adc rear=20
+I (116156) feed_plan: Feeding_Monitor repPlateCurrentState
+I (116158) feed_plan: Feeding_Monitor lastFeedState=0
+I (116435) dl_queue: MicroSw_DebounceHandle
+I (116664) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116689) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116717) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116751) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116781) control_thread: Plate_Micro_Handle GPIO_MOTOR_BRAKE
+I (116798) MQTT_INIT: Report_StateChack Report_StateChack = 16
+
+I (116805) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (116812) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (116826) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (116835) dl_queue: Close_SW_Interrupt
+I (116851) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (116914) control_thread: Plate_Micro_Handle curr_plate_pos=3 set_plate_pos=3
+I (116921) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (116923) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (116930) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (116988) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=21
+I (116993) dl_queue: gpio_task_example d_time_cnt=974 current_time_diff=911 max_time_diff=673
+
+I (117054) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=22
+I (117059) dl_queue: GPIO[10] intr, val: 0
+
+I (117066) dl_queue: gpio_task_example res_stack = 660
+
+I (117068) dl_queue: gpio_task_example: start up
+I (117392) dl_queue: MicroSw_DebounceHandle
+I (117751) feed_plan: Feeding_Monitor lastFeedState=0
+I (119020) BSP_init: Read_PlateMotorAdc cali data: 3000 mA
+I (119050) feed_plan: Feeding_Monitor lastFeedState=0
+I (120444) feed_plan: Feeding_Monitor lastFeedState=0
+I (120523) MQTT_INIT: Local time is: Thu Jan  1 00:01:58 1970
+
+I (121747) feed_plan: Feeding_Monitor lastFeedState=0
+I (123110) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (123125) feed_plan: Feeding_Monitor plateStuckTimeout=4 doorStuckTimeout=0
+I (123134) feed_plan: Feeding_Monitor lastFeedState=0
+I (123177) dl_led: Power_Handle curr_plate_pos=3 set_plate_pos=3
+I (123187) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (124413) feed_plan: Feeding_Monitor lastFeedState=0
+I (125725) feed_plan: Feeding_Monitor lastFeedState=0
+I (127068) feed_plan: Feeding_Monitor lastFeedState=0
+I (128420) feed_plan: Feeding_Monitor lastFeedState=0
+I (129718) feed_plan: Feeding_Monitor lastFeedState=0
+I (131092) feed_plan: Feeding_Monitor lastFeedState=0
+I (132405) BSP_init: Read_PlateMotorAdc cali data: 3000 mA
+I (132456) feed_plan: Feeding_Monitor lastFeedState=0
+I (133743) feed_plan: Feeding_Monitor lastFeedState=0
+I (135103) feed_plan: Feeding_Monitor lastFeedState=0
+I (136315) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (136317) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (136323) feed_plan: Feeding_Monitor lastFeedState=0
+I (136370) dl_led: Power_Handle curr_plate_pos=3 set_plate_pos=3
+I (136385) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (137659) feed_plan: Feeding_Monitor lastFeedState=0
+I (138953) feed_plan: Feeding_Monitor lastFeedState=0
+I (140279) feed_plan: Feeding_Monitor lastFeedState=0
+I (140525) MQTT_INIT: Local time is: Thu Jan  1 00:02:18 1970
+
+I (141600) feed_plan: Feeding_Monitor lastFeedState=0
+I (142887) feed_plan: Feeding_Monitor lastFeedState=0
+I (144240) feed_plan: Feeding_Monitor lastFeedState=0
+I (145538) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (145564) feed_plan: Feeding_Monitor lastFeedState=0
+I (146914) feed_plan: Feeding_Monitor lastFeedState=0
+I (148193) feed_plan: Feeding_Monitor lastFeedState=0
+I (149500) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (149515) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (149519) feed_plan: Feeding_Monitor lastFeedState=0
+I (149569) dl_led: Power_Handle curr_plate_pos=3 set_plate_pos=3
+I (149575) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (150820) feed_plan: Feeding_Monitor lastFeedState=0
+I (151534) MQTT_INIT: Report_StateChack Report_StateChack = 10
+
+I (151545) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (151552) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (151562) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (151567) communicate_thread: Communicate_ThreadHandle res_stack = 1804
+
+I (151586) dl_led: sitch to POWER_BAT_MODE, close ap and ble
+I (152181) feed_plan: Feeding_Monitor lastFeedState=0
+I (153536) feed_plan: Feeding_Monitor lastFeedState=0
+I (154246) dl_led: Power_Handle Suspend_AllTask
+I (154291) dl_led: DL_LED_suspendAllTask timerRestartHandle
+I (155326) dl_led: DL_LED_restartTimerTask wait USB insert
+I (156368) dl_led: DL_LED_restartTimerTask wait USB insert
+I (157350) dl_led: DL_LED_restartTimerTask wait USB insert
+I (158337) dl_led: DL_LED_restartTimerTask wait USB insert
+I (159345) dl_led: DL_LED_restartTimerTask wait USB insert
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5810,len:0x168c
+load:0x403cc710,len:0x934
+load:0x403ce710,len:0x2e48
+entry 0x403cc710
+I (52438) boot: ESP-IDF v4.4.6-dirty 2nd stage bootloader
+I (52441) boot: compile time 18:37:10
+I (52446) boot: chip revision: v0.3
+I (52451) boot.esp32c3: SPI Speed      : 80MHz
+I (52453) boot.esp32c3: SPI Mode       : SLOW READ
+I (52456) boot.esp32c3: SPI Flash Size : 4MB
+I (52465) boot: Enabling RNG early entropy source...
+I (52477) boot: Partition Table:
+I (52479) boot: ## Label            Usage          Type ST Offset   Length
+I (52482) boot:  0 nvs              WiFi data        01 02 00009000 00020000
+I (52485) boot:  1 otadata          OTA data         01 00 00029000 00002000
+I (52488) boot:  2 phy_init         RF data          01 01 0002b000 00001000
+I (52491) boot:  3 ota_0            OTA app          00 10 00030000 001af000
+I (52494) boot:  4 ota_1            OTA app          00 11 001e0000 001af000
+I (52497) boot: End of partition table
+I (52502) esp_image: segment 0: paddr=00030020 vaddr=3c0f0020 size=2be00h (179712) map
+I (52720) esp_image: segment 1: paddr=0005be28 vaddr=3fc95600 size=02ec8h ( 11976) load
+I (52734) esp_image: segment 2: paddr=0005ecf8 vaddr=40380000 size=01320h (  4896) load
+I (52745) esp_image: segment 3: paddr=00060020 vaddr=42000020 size=ecb04h (969476) map
+I (97) esp_image: segment 4: paddr=0014cb2c vaddr=40381320 size=14258h ( 82520) load
+I (188) boot: Loaded app from partition at offset 0x30000
+I (189) boot: Disabling RNG early entropy source...
+I (196) cpu_start: Unicore app
+I (199) cpu_start: Pro cpu up.
+I (222) cpu_start: Pro cpu start user code
+I (222) cpu_start: cpu freq: 160000000
+I (223) cpu_start: Application information:
+I (223) cpu_start: Project name:     AF109
+I (224) cpu_start: App version:      2.0.38
+I (224) cpu_start: Compile time:     Sep 25 2025 18:36:42
+I (224) cpu_start: ELF file SHA256:  509a1e2d623af84c...
+I (225) cpu_start: ESP-IDF:          v4.4.6-dirty
+I (225) cpu_start: Min chip rev:     v0.3
+I (226) cpu_start: Max chip rev:     v0.99 
+I (226) cpu_start: Chip rev:         v0.3
+I (227) heap_init: Initializing. RAM available for dynamic allocation:
+I (228) heap_init: At 3FCA5280 len 00037490 (221 KiB): DRAM
+I (228) heap_init: At 3FCDC710 len 00002950 (10 KiB): STACK/DRAM
+I (228) heap_init: At 50000020 len 00001FE0 (7 KiB): RTCRAM
+I (234) spi_flash: detected chip: gd
+I (237) spi_flash: flash io: dio
+I (240) sleep: Configure to isolate all GPIO pins in sleep state
+I (241) sleep: Enable automatic switching of GPIO sleep configuration
+I (243) coexist: coexist rom version 9387209
+I (246) cpu_start: Starting scheduler.
+I (250) Main_function: [APP] Startup..
+I (252) Main_function: [APP] Free memory: 227388 bytes
+I (253) Main_function: [APP] IDF version: v4.4.6-dirty
+I (302) system_info: SYSYTEM_INFO_init systemInfoParam NULL
+I (314) gpio: GPIO[9]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (535) aw9523b: AW9523B_i2cInit id=0x23
+I (583) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (594) aw9523b: AW9523B_i2cInit P0_INPUT=0x1 DL_PRODUCT_HARDWARE_VERSION:5.2.0
+I (623) BSP_init: Ptc_init: OK
+I (644) BSP_init: Motor_init: OK
+I (673) BSP_init: Door_Motor_init: OK
+I (701) gpio: GPIO[18]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (724) BSP_init: Key_init: ok!
+I (739) BSP_init: AlarmLed_init: ok!
+I (755) gpio: GPIO[10]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 1| Pulldown: 0| Intr:4 
+I (781) gpio: GPIO[19]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (806) gpio: GPIO[20]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (833) gpio: GPIO[0]| InputEn: 1| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:4 
+I (884) gpio: GPIO[4]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (908) gpio: GPIO[1]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (932) gpio: GPIO[3]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (957) gpio: GPIO[5]| InputEn: 0| OutputEn: 0| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (974) gpio: GPIO[6]| InputEn: 0| OutputEn: 1| OpenDrain: 0| Pullup: 0| Pulldown: 0| Intr:0 
+I (991) BSP_init: BSP_aduioInit: OK
+I (1000) BSP_init: Function:Bsp_init
+I (1017) MQTT_INIT: wifi_mqtt_data_s.app_config_info_s.bindId:3 
+I (1025) MQTT_INIT: Update current UTC timestamp(ms): 0
+I (1028) MQTT_INIT: Mqtt_TimeInit Read_NvsBLob RTC_INFO_KEY success time_cnt=0
+I (1057) MQTT_INIT: Mqtt_TimeInit Write_NvsBLob RTC_INFO_KEY success time_cnt=0
+I (1061) MQTT_INIT: Mqtt_DataInit exist mqtt info
+I (1063) MQTT_INIT: Mqtt_DataInit read success
+I (1066) MQTT_INIT: dev_sn:<redacted>
+I (1067) MQTT_INIT: product_key:<redacted>
+I (1069) MQTT_INIT: product_secret:<redacted>
+I (1073) dev_attr: led_enable=1 led_mode=1
+I (1075) dev_attr: led_start_hour=0 led_start_min=0
+I (1076) dev_attr: led_end_hour=0 led_end_min=0
+I (1078) dev_attr: doorCheckSignalTime=5 doorNotcheckSignalTime=10
+I (1080) dev_attr: dev_attr_t=72 led_info_t=14 cool_info_t=14 sound_info_t=14
+I (1085) dev_attr: plateStuckCurrent=400 doorStuckCurrent=400
+I (1088) feed_plan: rear=0 front=0
+I (1091) feed_plan: feed_record_s empty
+I (1092) feed_plan: feed_err_record_s empty
+I (1093) feed_plan: Feed_DataInit normal i=0 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1095) feed_plan: Feed_DataInit normal i=1 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1098) feed_plan: Feed_DataInit normal i=2 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1100) feed_plan: Feed_DataInit normal i=3 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1102) feed_plan: Feed_DataInit normal i=4 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1104) feed_plan: Feed_DataInit normal i=5 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1106) feed_plan: Feed_DataInit normal i=6 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1109) feed_plan: Feed_DataInit normal i=7 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1111) feed_plan: Feed_DataInit normal i=8 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1113) feed_plan: Feed_DataInit normal i=9 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1115) feed_plan: Feed_DataInit normal i=10 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1117) feed_plan: Feed_DataInit normal i=11 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1119) feed_plan: Feed_DataInit normal i=12 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1121) feed_plan: Feed_DataInit normal i=13 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1123) feed_plan: Feed_DataInit normal i=14 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1125) feed_plan: Feed_DataInit normal i=15 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1127) feed_plan: Feed_DataInit normal i=16 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1129) feed_plan: Feed_DataInit normal i=17 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1131) feed_plan: Feed_DataInit normal i=18 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1133) feed_plan: Feed_DataInit normal i=19 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1135) feed_plan: Feed_DataInit normal i=20 GRAIN_THAW=0 GRAIN_START=0 OPEN_DOOR=0 CLOSE_DOOR=0 GRAIN_END=0
+I (1137) feed_plan: feed flash_feed_data_s.feed_plan_index 0: 
+I (1147) dl_rep_log: DL_REP_LOG_recLogInit, line:36, cnt=30 rear=22 front=23 size=31 DEV_LOG_RECORD_INFO_T=1504
+I (1149) Main_function: DataMananger_Init
+I (1149) Main_function: version:2.0.38
+I (1156) pp: pp rom version: 9387209
+I (1157) net80211: net80211 rom version: 9387209
+I (1162) wifi:wifi driver task: 3fcaf27c, prio:23, stack:6656, core=0
+I (1168) system_api: Base MAC address is not set
+I (1170) system_api: read default base MAC address from EFUSE
+I (1171) system_api: Base MAC address is not set
+I (1172) system_api: read default base MAC address from EFUSE
+I (1191) wifi:wifi firmware version: 1ba8b6a
+I (1192) wifi:wifi certification version: v7.0
+I (1193) wifi:config NVS flash: enabled
+I (1194) wifi:config nano formating: disabled
+I (1195) wifi:Init data frame dynamic rx buffer num: 32
+I (1196) wifi:Init management frame dynamic rx buffer num: 32
+I (1198) wifi:Init management short buffer num: 32
+I (1199) wifi:Init dynamic tx buffer num: 32
+I (1201) wifi:Init static tx FG buffer num: 2
+I (1203) wifi:Init static rx buffer size: 1600
+I (1204) wifi:Init static rx buffer num: 10
+I (1205) wifi:Init dynamic rx buffer num: 32
+I (1209) wifi_init: rx ba win: 6
+I (1210) wifi_init: tcpip mbox: 32
+I (1210) wifi_init: udp mbox: 6
+I (1211) wifi_init: tcp mbox: 6
+I (1212) wifi_init: tcp tx win: 5744
+I (1213) wifi_init: tcp rx win: 5744
+I (1214) wifi_init: tcp mss: 1440
+I (1215) wifi_init: WiFi IRAM OP enabled
+I (1216) wifi_init: WiFi RX IRAM OP enabled
+I (1216) wifi_init: WiFi SLP IRAM OP enabled
+I (1218) ble_net: initialise_wifi enter ap mode
+
+I (1223) ble_net: Wifi_Config_Ap_Mode set custom ip addr success
+
+I (1224) system_api: Base MAC address is not set
+I (1225) system_api: read default base MAC address from EFUSE
+I (1235) ble_net: Bt_init mqtt_addr= port=0 user_id=0
+
+I (1237) ble_net: Ap_Config_Udp_Thread Socket created
+
+I (1243) dl_queue: gpio_task_example: start up
+I (1243) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (1256) dl_queue: Monitor_InterruptTask Timer_PlateErrHandle start
+I (1261) dl_queue: Monitor_QueueInit :ok
+I (1270) communicate_thread: Communicate_ThreadHandle res_stack = 3416
+
+I (1280) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (1285) control_thread: CTRL_THREAD_devModuleInit curr_plate_pos=3 set_plate_pos=3
+I (1298) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (1302) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_ZERO
+I (1313) ble_net: Ap_Config_Udp_Thread Socket bound, port 
+
+I (1317) dl_timer: DlTimer_Init :ok
+I (1324) Main_function: [APP] Free memory: 152924 bytes
+I (3039) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=23
+I (3046) dl_queue: GPIO[19] intr, val: 1
+
+I (3056) dl_queue: gpio_task_example res_stack = 768
+
+I (3058) dl_queue: gpio_task_example: start up
+I (3308) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (3358) dl_queue: Close_SW_Interrupt
+I (3377) control_thread: Device_Module_Ctrl PLATE_READY_SET_POS
+I (3894) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_CLOSING
+I (3935) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (3974) dl_queue: MicroSw_DebounceHandle
+I (4498) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (4520) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (4542) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5064) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5103) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5123) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5657) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5686) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (5707) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6248) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6264) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6283) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6603) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6746) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=24
+I (6755) dl_queue: GPIO[10] intr, val: 0
+
+I (6765) dl_queue: gpio_task_example res_stack = 704
+
+I (6768) dl_queue: gpio_task_example: start up
+I (6771) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6781) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6794) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6809) dl_queue: Close_SW_Interrupt
+I (6869) control_thread: Plate_Micro_Handle curr_plate_pos=1 set_plate_pos=1
+I (6875) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (6880) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (6887) dl_queue: gpio_task_example max_time_diff111111=263
+
+I (6890) dl_queue: gpio_task_example curr_plate_is_cal=0 check_cnt=1
+
+I (6968) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=25
+I (6974) dl_queue: gpio_task_example d_time_cnt=350 current_time_diff=263 max_time_diff=263
+
+I (7052) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=26
+I (7057) dl_queue: GPIO[10] intr, val: 0
+
+I (7064) dl_queue: gpio_task_example res_stack = 688
+
+I (7067) dl_queue: gpio_task_example: start up
+I (7071) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7080) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7089) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7342) dl_queue: MicroSw_DebounceHandle
+I (7655) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7685) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (7706) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8245) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8276) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8299) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8822) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8853) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (8881) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9422) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9462) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (9484) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10007) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10037) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10059) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10094) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10241) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=27
+I (10249) dl_queue: GPIO[10] intr, val: 0
+
+I (10258) dl_queue: gpio_task_example res_stack = 688
+
+I (10261) dl_queue: gpio_task_example: start up
+I (10264) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10286) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10298) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10312) dl_queue: Close_SW_Interrupt
+I (10381) control_thread: Plate_Micro_Handle curr_plate_pos=2 set_plate_pos=1
+I (10389) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (10392) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (10401) dl_queue: gpio_task_example max_time_diff111111=289
+
+I (10404) dl_queue: gpio_task_example curr_plate_is_cal=0 check_cnt=2
+
+I (10485) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=28
+I (10491) dl_queue: gpio_task_example d_time_cnt=379 current_time_diff=289 max_time_diff=289
+
+I (10556) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=29
+I (10561) dl_queue: GPIO[10] intr, val: 0
+
+I (10568) dl_queue: gpio_task_example res_stack = 672
+
+I (10570) dl_queue: gpio_task_example: start up
+I (10834) dl_queue: MicroSw_DebounceHandle
+I (11081) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11103) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11126) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11648) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11688) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (11710) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12236) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12257) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12278) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12813) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12844) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (12886) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13423) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13571) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=30
+I (13578) dl_queue: GPIO[10] intr, val: 1
+
+I (13589) dl_queue: gpio_task_example res_stack = 672
+
+I (13592) dl_queue: gpio_task_example: start up
+I (13596) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13605) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13614) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13948) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (13983) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14004) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14039) dl_queue: Close_SW_Interrupt
+I (14109) control_thread: Plate_Micro_Handle curr_plate_pos=3 set_plate_pos=1
+I (14113) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (14120) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14130) dl_queue: gpio_task_example max_time_diff111111=690
+
+I (14135) dl_queue: gpio_task_example max_time_diff222222222=690
+
+I (14138) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=3
+
+I (14237) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=0
+I (14243) dl_queue: gpio_task_example d_time_cnt=804 current_time_diff=690 max_time_diff=690
+
+I (14344) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=1
+I (14350) dl_queue: GPIO[10] intr, val: 0
+
+I (14358) dl_queue: gpio_task_example res_stack = 672
+
+I (14360) dl_queue: gpio_task_example: start up
+I (14364) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14373) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14383) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14563) dl_queue: MicroSw_DebounceHandle
+I (14893) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14929) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (14962) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15536) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15554) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (15570) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16086) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16122) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16144) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16687) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16723) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (16750) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17149) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17329) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=2
+I (17335) dl_queue: GPIO[10] intr, val: 0
+
+I (17345) dl_queue: gpio_task_example res_stack = 672
+
+I (17350) dl_queue: gpio_task_example: start up
+I (17355) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17367) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17374) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17386) dl_queue: Close_SW_Interrupt
+I (17448) control_thread: Plate_Micro_Handle curr_plate_pos=2 set_plate_pos=1
+I (17454) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (17459) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17468) dl_queue: gpio_task_example max_time_diff111111=690
+
+I (17472) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (17565) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=3
+I (17571) dl_queue: gpio_task_example d_time_cnt=389 current_time_diff=285 max_time_diff=690
+
+I (17674) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=4
+I (17679) dl_queue: GPIO[10] intr, val: 0
+
+I (17686) dl_queue: gpio_task_example res_stack = 672
+
+I (17688) dl_queue: gpio_task_example: start up
+I (17692) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17700) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17706) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (17904) dl_queue: MicroSw_DebounceHandle
+I (18216) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18242) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18259) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18785) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18823) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (18857) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19335) MQTT_INIT: Local time is: Thu Jan  1 00:00:18 1970
+
+I (19382) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19405) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19427) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (19971) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20015) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20036) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20567) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20609) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20630) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20668) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20784) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=5
+I (20791) dl_queue: GPIO[10] intr, val: 0
+
+I (20800) dl_queue: gpio_task_example res_stack = 656
+
+I (20803) dl_queue: gpio_task_example: start up
+I (20807) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20815) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20823) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20841) dl_queue: Close_SW_Interrupt
+I (20921) control_thread: Plate_Micro_Handle curr_plate_pos=3 set_plate_pos=1
+I (20927) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (20930) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (20938) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (21026) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=6
+I (21031) dl_queue: gpio_task_example d_time_cnt=352 current_time_diff=258 max_time_diff=690
+
+I (21119) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=7
+I (21124) dl_queue: GPIO[10] intr, val: 0
+
+I (21130) dl_queue: gpio_task_example res_stack = 656
+
+I (21133) dl_queue: gpio_task_example: start up
+I (21400) dl_queue: MicroSw_DebounceHandle
+I (21638) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21678) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (21700) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22228) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22264) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22295) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22823) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22843) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (22862) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23408) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23454) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23476) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (23999) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24146) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=8
+I (24160) dl_queue: GPIO[10] intr, val: 1
+
+I (24169) dl_queue: gpio_task_example res_stack = 656
+
+I (24171) dl_queue: gpio_task_example: start up
+I (24176) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24188) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24195) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24534) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24560) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24582) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24608) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24629) control_thread: Plate_Micro_Handle GPIO_MOTOR_BRAKE
+I (24640) MQTT_INIT: Report_StateChack Report_StateChack = 16
+
+I (24645) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (24651) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (24663) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (24671) dl_queue: Close_SW_Interrupt
+I (24684) communicate_thread: Communicate_ThreadHandle res_stack = 1800
+
+I (24738) control_thread: Plate_Micro_Handle curr_plate_pos=1 set_plate_pos=1
+I (24744) dl_queue: gpio_task_example Micro_SwHandle second edge
+
+I (24748) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24756) dl_queue: gpio_task_example curr_plate_is_cal=1 check_cnt=4
+
+I (24839) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=9
+I (24843) dl_queue: gpio_task_example d_time_cnt=827 current_time_diff=739 max_time_diff=690
+
+I (24924) dl_rep_log: DL_REP_LOG_recLogSave, line:77, fileTag:sensor rear=10
+I (24930) dl_queue: GPIO[10] intr, val: 0
+
+I (24937) dl_queue: gpio_task_example res_stack = 656
+
+I (24939) dl_queue: gpio_task_example: start up
+I (24942) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24952) aw9523b: GetHardwareVersion P0_INPUT=0x1
+I (24957) control_thread: DoorMotor_Reset_ThreadHandle DOOR_MOTOR_CLOSE_OVER
+I (24965) control_thread: PET_Info_Init rear=0 front=0
+I (24967) control_thread: PET_Info_Init pet_record empty
+I (24969) control_thread: PET_Info_Init i=0 PET_NEAR=0 PET_LEAVE=0
+I (24971) control_thread: PET_Info_Init i=1 PET_NEAR=0 PET_LEAVE=0
+I (24973) control_thread: PET_Info_Init i=2 PET_NEAR=0 PET_LEAVE=0
+I (24975) control_thread: PET_Info_Init i=3 PET_NEAR=0 PET_LEAVE=0
+I (24977) control_thread: PET_Info_Init i=4 PET_NEAR=0 PET_LEAVE=0
+I (24979) control_thread: PET_Info_Init i=5 PET_NEAR=0 PET_LEAVE=0
+I (24982) control_thread: PET_Info_Init i=6 PET_NEAR=0 PET_LEAVE=0
+I (24984) control_thread: PET_Info_Init i=7 PET_NEAR=0 PET_LEAVE=0
+I (24987) control_thread: PET_Info_Init i=8 PET_NEAR=0 PET_LEAVE=0
+I (24988) control_thread: PET_Info_Init i=9 PET_NEAR=0 PET_LEAVE=0
+I (24990) control_thread: PET_Info_Init i=10 PET_NEAR=0 PET_LEAVE=0
+I (24993) control_thread: PET_Info_Init i=11 PET_NEAR=0 PET_LEAVE=0
+I (24994) control_thread: PET_Info_Init i=12 PET_NEAR=0 PET_LEAVE=0
+I (24996) control_thread: PET_Info_Init i=13 PET_NEAR=0 PET_LEAVE=0
+I (24998) control_thread: PET_Info_Init i=14 PET_NEAR=0 PET_LEAVE=0
+I (25000) control_thread: PET_Info_Init i=15 PET_NEAR=0 PET_LEAVE=0
+W (25002) control_thread: Control_ThreadHandle start...
+I (25201) dl_queue: MicroSw_DebounceHandle
+I (25647) BSP_init: BSP_setExistState GPIO_EXIST_OFF
+I (25713) MQTT_INIT: Report_StateChack Report_StateChack = 10
+
+I (25733) MQTT_INIT: Report_StateChack change_flag = 1
+
+I (25738) MQTT_INIT: Report_StateChack state = 1.000000
+
+I (25753) communicate_thread:  Com_ReportDevState DL_DEVICE_WIFI_DISCONNECT or MQTT_DISCONNECT 
+
+I (25759) communicate_thread: Communicate_ThreadHandle res_stack = 1800
+
+I (25765) dl_led: sitch to POWER_DC_MODE AP,open ap and ble
+I (26355) feed_plan: Feeding_Monitor lastFeedState=0
+I (27684) feed_plan: Feeding_Monitor lastFeedState=0
+I (29002) feed_plan: Feeding_Monitor lastFeedState=0
+I (30315) feed_plan: Feeding_Monitor lastFeedState=0
+I (31606) feed_plan: Feeding_Monitor lastFeedState=0
+I (32913) feed_plan: Feeding_Monitor lastFeedState=0
+I (34213) feed_plan: Feeding_Monitor lastFeedState=0
+I (35600) feed_plan: Feeding_Monitor lastFeedState=0
+I (36920) feed_plan: Feeding_Monitor lastFeedState=0
+I (38256) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (38283) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (38294) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (38304) feed_plan: Feeding_Monitor lastFeedState=0
+I (38373) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (38390) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (39330) MQTT_INIT: Local time is: Thu Jan  1 00:00:38 1970
+
+I (39633) feed_plan: Feeding_Monitor lastFeedState=0
+I (40968) feed_plan: Feeding_Monitor lastFeedState=0
+I (42283) feed_plan: Feeding_Monitor lastFeedState=0
+I (43597) feed_plan: Feeding_Monitor lastFeedState=0
+I (44896) feed_plan: Feeding_Monitor lastFeedState=0
+I (46256) feed_plan: Feeding_Monitor lastFeedState=0
+I (47499) feed_plan: Feeding_Monitor lastFeedState=0
+I (48787) feed_plan: Feeding_Monitor lastFeedState=0
+I (50104) feed_plan: Feeding_Monitor lastFeedState=0
+I (51402) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (51429) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (51446) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (51451) feed_plan: Feeding_Monitor lastFeedState=0
+I (51505) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (51511) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (52764) feed_plan: Feeding_Monitor lastFeedState=0
+I (54097) feed_plan: Feeding_Monitor lastFeedState=0
+I (55410) feed_plan: Feeding_Monitor lastFeedState=0
+I (56751) feed_plan: Feeding_Monitor lastFeedState=0
+I (58032) feed_plan: Feeding_Monitor lastFeedState=0
+I (59298) feed_plan: Feeding_Monitor lastFeedState=0
+I (59345) MQTT_INIT: Local time is: Thu Jan  1 00:00:58 1970
+
+I (60544) feed_plan: Feeding_Monitor lastFeedState=0
+I (61929) feed_plan: Feeding_Monitor lastFeedState=0
+I (63217) feed_plan: Feeding_Monitor lastFeedState=0
+I (64559) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (64587) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (64600) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (64609) feed_plan: Feeding_Monitor lastFeedState=0
+I (64679) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (64695) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (65936) feed_plan: Feeding_Monitor lastFeedState=0
+I (67293) feed_plan: Feeding_Monitor lastFeedState=0
+I (68624) feed_plan: Feeding_Monitor lastFeedState=0
+I (69909) feed_plan: Feeding_Monitor lastFeedState=0
+I (71250) feed_plan: Feeding_Monitor lastFeedState=0
+I (72542) feed_plan: Feeding_Monitor lastFeedState=0
+I (73874) feed_plan: Feeding_Monitor lastFeedState=0
+I (75196) feed_plan: Feeding_Monitor lastFeedState=0
+I (76489) feed_plan: Feeding_Monitor lastFeedState=0
+I (77799) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (77828) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (77843) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (77849) feed_plan: Feeding_Monitor lastFeedState=0
+I (77923) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (77934) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (79191) feed_plan: Feeding_Monitor lastFeedState=0
+I (79324) MQTT_INIT: Local time is: Thu Jan  1 00:01:18 1970
+
+I (80484) feed_plan: Feeding_Monitor lastFeedState=0
+I (81843) feed_plan: Feeding_Monitor lastFeedState=0
+I (83168) feed_plan: Feeding_Monitor lastFeedState=0
+I (84462) feed_plan: Feeding_Monitor lastFeedState=0
+I (85787) feed_plan: Feeding_Monitor lastFeedState=0
+I (87085) feed_plan: Feeding_Monitor lastFeedState=0
+I (88356) feed_plan: Feeding_Monitor lastFeedState=0
+I (89648) feed_plan: Feeding_Monitor lastFeedState=0
+I (90939) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (90968) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (90983) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (90989) feed_plan: Feeding_Monitor lastFeedState=0
+I (91051) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (91063) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (92315) feed_plan: Feeding_Monitor lastFeedState=0
+I (93648) feed_plan: Feeding_Monitor lastFeedState=0
+I (94973) feed_plan: Feeding_Monitor lastFeedState=0
+I (96286) feed_plan: Feeding_Monitor lastFeedState=0
+I (97613) feed_plan: Feeding_Monitor lastFeedState=0
+I (98901) feed_plan: Feeding_Monitor lastFeedState=0
+I (99324) MQTT_INIT: Local time is: Thu Jan  1 00:01:38 1970
+
+I (100254) feed_plan: Feeding_Monitor lastFeedState=0
+I (101603) feed_plan: Feeding_Monitor lastFeedState=0
+I (102891) feed_plan: Feeding_Monitor lastFeedState=0
+I (104200) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (104220) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (104228) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (104234) feed_plan: Feeding_Monitor lastFeedState=0
+I (104284) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (104292) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (105510) feed_plan: Feeding_Monitor lastFeedState=0
+I (106849) feed_plan: Feeding_Monitor lastFeedState=0
+I (108192) feed_plan: Feeding_Monitor lastFeedState=0
+I (109465) feed_plan: Feeding_Monitor lastFeedState=0
+I (110805) feed_plan: Feeding_Monitor lastFeedState=0
+I (112070) feed_plan: Feeding_Monitor lastFeedState=0
+I (113414) feed_plan: Feeding_Monitor lastFeedState=0
+I (114775) feed_plan: Feeding_Monitor lastFeedState=0
+I (116080) feed_plan: Feeding_Monitor lastFeedState=0
+I (117350) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (117375) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (117393) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (117399) feed_plan: Feeding_Monitor lastFeedState=0
+I (117450) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (117460) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (118703) feed_plan: Feeding_Monitor lastFeedState=0
+I (119427) MQTT_INIT: Local time is: Thu Jan  1 00:01:58 1970
+
+I (120011) feed_plan: Feeding_Monitor lastFeedState=0
+I (121331) feed_plan: Feeding_Monitor lastFeedState=0
+I (122619) feed_plan: Feeding_Monitor lastFeedState=0
+I (123931) feed_plan: Feeding_Monitor lastFeedState=0
+I (125232) feed_plan: Feeding_Monitor lastFeedState=0
+I (126577) feed_plan: Feeding_Monitor lastFeedState=0
+I (127879) feed_plan: Feeding_Monitor lastFeedState=0
+I (129132) feed_plan: Feeding_Monitor lastFeedState=0
+I (130438) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (130468) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (130484) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (130491) feed_plan: Feeding_Monitor lastFeedState=0
+I (130541) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (130548) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (131814) feed_plan: Feeding_Monitor lastFeedState=0
+I (133178) feed_plan: Feeding_Monitor lastFeedState=0
+I (134489) feed_plan: Feeding_Monitor lastFeedState=0
+I (135765) feed_plan: Feeding_Monitor lastFeedState=0
+I (137071) feed_plan: Feeding_Monitor lastFeedState=0
+I (138384) feed_plan: Feeding_Monitor lastFeedState=0
+I (139322) MQTT_INIT: Local time is: Thu Jan  1 00:02:18 1970
+
+I (139744) feed_plan: Feeding_Monitor lastFeedState=0
+I (141029) feed_plan: Feeding_Monitor lastFeedState=0
+I (142376) feed_plan: Feeding_Monitor lastFeedState=0
+I (143658) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (143689) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (143705) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (143712) feed_plan: Feeding_Monitor lastFeedState=0
+I (143816) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (143836) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (145019) feed_plan: Feeding_Monitor lastFeedState=0
+I (146288) feed_plan: Feeding_Monitor lastFeedState=0
+I (147564) feed_plan: Feeding_Monitor lastFeedState=0
+I (148867) feed_plan: Feeding_Monitor lastFeedState=0
+I (150256) feed_plan: Feeding_Monitor lastFeedState=0
+I (151532) feed_plan: Feeding_Monitor lastFeedState=0
+I (152855) feed_plan: Feeding_Monitor lastFeedState=0
+I (154162) feed_plan: Feeding_Monitor lastFeedState=0
+I (155446) feed_plan: Feeding_Monitor lastFeedState=0
+I (156723) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (156751) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (156763) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (156768) feed_plan: Feeding_Monitor lastFeedState=0
+I (156816) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (156825) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (158086) feed_plan: Feeding_Monitor lastFeedState=0
+I (159391) feed_plan: Feeding_Monitor lastFeedState=0
+I (159495) MQTT_INIT: Local time is: Thu Jan  1 00:02:38 1970
+
+I (160720) feed_plan: Feeding_Monitor lastFeedState=0
+I (161996) feed_plan: Feeding_Monitor lastFeedState=0
+I (163298) feed_plan: Feeding_Monitor lastFeedState=0
+I (164596) feed_plan: Feeding_Monitor lastFeedState=0
+I (165945) feed_plan: Feeding_Monitor lastFeedState=0
+I (167247) feed_plan: Feeding_Monitor lastFeedState=0
+I (168565) feed_plan: Feeding_Monitor lastFeedState=0
+I (169885) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (169914) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (169930) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (169935) feed_plan: Feeding_Monitor lastFeedState=0
+I (169989) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (169996) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (171241) feed_plan: Feeding_Monitor lastFeedState=0
+I (172540) feed_plan: Feeding_Monitor lastFeedState=0
+I (173833) feed_plan: Feeding_Monitor lastFeedState=0
+I (175177) feed_plan: Feeding_Monitor lastFeedState=0
+I (176482) feed_plan: Feeding_Monitor lastFeedState=0
+I (177759) feed_plan: Feeding_Monitor lastFeedState=0
+I (179104) feed_plan: Feeding_Monitor lastFeedState=0
+I (179325) MQTT_INIT: Local time is: Thu Jan  1 00:02:58 1970
+
+I (180451) feed_plan: Feeding_Monitor lastFeedState=0
+I (181768) feed_plan: Feeding_Monitor lastFeedState=0
+I (183012) feed_plan: FEED_PLAN_plateHandle start DO_DOOL release
+I (183058) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (183078) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (183088) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (183094) feed_plan: Feeding_Monitor lastFeedState=0
+I (183170) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (183179) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (184395) feed_plan: Feeding_Monitor lastFeedState=0
+I (185681) feed_plan: Feeding_Monitor lastFeedState=0
+I (186970) feed_plan: Feeding_Monitor lastFeedState=0
+I (188289) feed_plan: Feeding_Monitor lastFeedState=0
+I (189619) feed_plan: Feeding_Monitor lastFeedState=0
+I (190958) feed_plan: Feeding_Monitor lastFeedState=0
+I (192249) feed_plan: Feeding_Monitor lastFeedState=0
+I (193599) feed_plan: Feeding_Monitor lastFeedState=0
+I (194931) feed_plan: Feeding_Monitor lastFeedState=0
+I (196215) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (196251) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (196255) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (196264) feed_plan: Feeding_Monitor lastFeedState=0
+I (196302) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (196310) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (197521) feed_plan: Feeding_Monitor lastFeedState=0
+I (198855) feed_plan: Feeding_Monitor lastFeedState=0
+I (199330) MQTT_INIT: Local time is: Thu Jan  1 00:03:18 1970
+
+I (200169) feed_plan: Feeding_Monitor lastFeedState=0
+I (201413) feed_plan: Feeding_Monitor lastFeedState=0
+I (202749) feed_plan: Feeding_Monitor lastFeedState=0
+I (204067) feed_plan: Feeding_Monitor lastFeedState=0
+I (205403) feed_plan: Feeding_Monitor lastFeedState=0
+I (206714) feed_plan: Feeding_Monitor lastFeedState=0
+I (208067) feed_plan: Feeding_Monitor lastFeedState=0
+I (209395) BSP_init: Read_PlateMotorAdc cali data: 50 mA
+I (209447) BSP_init: Read_DoorMotorAdc cali data: 35 mA
+I (209457) feed_plan: Feeding_Monitor plateStuckTimeout=0 doorStuckTimeout=0
+I (209465) feed_plan: Feeding_Monitor lastFeedState=0
+I (209511) dl_led: Power_Handle curr_plate_pos=1 set_plate_pos=1
+I (209518) dl_led: Power_Handle power_type=1 bat_adc=2734 eletric_quantity=0 limit_eletric_quantity=0  last_eletric_quantity=0 low_adc_cnt=0
+I (210769) feed_plan: Feeding_Monitor lastFeedState=0
+I (212114) feed_plan: Feeding_Monitor lastFeedState=0
+I (213417) feed_plan: Feeding_Monitor lastFeedState=0
+I (214787) feed_plan: Feeding_Monitor lastFeedState=0
+I (216046) feed_plan: Feeding_Monitor lastFeedState=0
+I (217313) feed_plan: Feeding_Monitor lastFeedState=0
+I (218687) feed_plan: Feeding_Monitor lastFeedState=0
+I (219419) MQTT_INIT: Local time is: Thu Jan  1 00:03:38 1970
+
+I (220026) feed_plan: Feeding_Monitor lastFeedState=0

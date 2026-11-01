@@ -1,0 +1,1348 @@
+# Petlibro Polar PLAF109 wet-food feeder: ESPHome re-implementation of the stock app AF109 2.0.38, v1.
+# Board "PLAF109 MainBoard V1.0 2025.07.22", ESP32-C3-WROOM-02U (4 MB), hardware revision 5.2.0.
+# Design, entities, test plan: docs/esphome-firmware.md. Pin map and sources: docs/hardware.md.
+# Every stock constant is cited as <function>@<address> from analysis/static/README.md (S) or the
+# emulation notes analysis/emulation/README.md (E). "OURS" marks behaviour that is not from stock.
+#
+# SAFETY DEFAULTS (development):
+#   - No motor moves at boot unless home_on_boot is "true" (stock closes the lid and homes the tray at boot).
+#   - Cooling is disabled at compile time (cooling_allowed) AND by a runtime switch that is off at boot:
+#     the fan wiring is UNKNOWN and UNTESTED. Never run the Peltier without confirming the fan runs.
+#   - Every motor move has a hard timeout and ends braked (H-bridge 1,1).
+#   - Hold the button (GPIO18) 3 s, or press "Stop all", to brake both motors and disable cooling.
+#
+# Installed into the stock partition table under the stock IDF v4.4.6 bootloader (no OTA rollback).
+
+substitutions:
+  device_name: petlibro-polar
+  friendly_name: "Petlibro Polar"
+  # OURS (stock = true): close the lid and home the tray at boot.
+  home_on_boot: "false"
+  # Stock AllDet_init @0x4200ce24 sets P0_4/P0_7 = 1 at boot on DC. What they power is unknown.
+  # The tray/lid controllers switch them on before every move anyway.
+  enables_on_boot: "false"
+  # Compile-time cooling gate. Keep "false" until the fan wiring is confirmed (docs/esphome-firmware.md, test 8).
+  cooling_allowed: "true"   # fan verified 2026-10-30: switched with P1_4 in hardware
+  # Default tray: 3 (stock). 6, 9, 12 are EXPERIMENTAL timed sub-steps; also selectable at runtime.
+  compartments_default: "3"
+  # Cooling switches P0_4/P0_7 on before the Peltier (stock DC state). "false" only for the fan-wiring test.
+  cooling_asserts_enables: "true"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  on_boot:
+    priority: -100
+    then:
+      # AW9523B reset (200 ms) + init run asynchronously in the hub; wait for it.
+      - wait_until:
+          condition:
+            lambda: 'return id(aw).is_ready() || id(aw).is_failed();'
+          timeout: 3s
+      - lambda: |-
+          if (!id(aw).is_ready()) {
+            id(hw_rev).publish_state("AW9523B not found");
+            id(hw_rev_ok) = false;
+          } else {
+            // GetHardwareVersion @0x4200d930: P0 bits[1:0]: 0 -> 5.0.0, 2 -> 5.1.0, 1/3 -> 5.2.0
+            int p0 = id(aw).read_port(0);
+            int r = p0 < 0 ? -1 : (p0 & 0x03);
+            const char *rev = r < 0 ? "read failed" : r == 0 ? "5.0.0" : r == 2 ? "5.1.0" : "5.2.0";
+            id(hw_rev).publish_state(str_sprintf("%s (ID 0x%02X, P0 0x%02X)", rev, id(aw).get_chip_id(), p0 & 0xFF));
+            // Only the 5.2.0 homing (widest mark, falling edge) is implemented.
+            id(hw_rev_ok) = (r == 1 || r == 3);
+          }
+          if (!id(hw_rev_ok)) {
+            ESP_LOGE("main", "Expander missing or hardware revision is not 5.2.0: motors inhibited");
+            id(tray).set_inhibit(true, "hardware revision");
+            id(lid).set_inhibit(true, "hardware revision");
+          }
+      - if:
+          condition:
+            lambda: 'return ${enables_on_boot} && !id(on_battery).state;'
+          then:
+            - switch.turn_on: en_p04
+            - switch.turn_on: en_p07
+      - if:
+          condition:
+            lambda: 'return ${home_on_boot} && id(hw_rev_ok);'
+          then:
+            # Stock DoorMotor_Reset_ThreadHandle @0x4200ec58: close the lid first, then (HW 5.2.0) home the tray.
+            # OURS: the close goes through the feeder's anti-pinch path (IR on, enables on, 10 s clear, pet
+            # check, stall reopen), and the tray homes only if the lid really closed.
+            - logger.log: "home_on_boot: closing lid (anti-pinch), then homing tray"
+            - polar_feeder.boot_close: feeder
+            - wait_until:
+                condition:
+                  lambda: 'return !id(feeder).is_feeding();'
+                timeout: 5min
+            - if:
+                condition:
+                  lambda: 'return id(lid).is_closed();'
+                then:
+                  - polar_tray.home:
+                else:
+                  - logger.log: {format: "home_on_boot: lid not closed, tray NOT homed", level: ERROR}
+
+esp32:
+  variant: esp32c3
+  board: esp32-c3-devkitm-1
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [aw9523b, polar_tray, polar_lid, polar_feeder, polar_cooling, polar_sound]
+
+logger:
+  level: DEBUG
+  hardware_uart: UART0   # ISP header (GPIO21 TX), 115200. GPIO18/19 are I/O, so no USB-Serial-JTAG.
+  baud_rate: 115200
+
+api:
+  encryption:
+    key: !secret petlibro_polar_api_key
+  actions:
+    - action: stop_all
+      then:
+        - script.execute: stop_all
+    - action: tray_home
+      then:
+        - polar_tray.home: tray
+    - action: tray_step
+      then:
+        - polar_tray.step: tray
+    - action: tray_go_to
+      variables:
+        compartment: int
+      then:
+        - polar_tray.go_to:
+            id: tray
+            compartment: !lambda 'return compartment;'
+    - action: feed_now
+      variables:
+        minutes: int   # -1 = global lid-open time, 0 = until close_lid
+      then:
+        - polar_feeder.feed_now:
+            id: feeder
+            minutes: !lambda 'return minutes;'
+    - action: open_lid
+      then:
+        - polar_feeder.open_lid: feeder
+    # Seam for an external controller (e.g. a future load-cell scale): end the meal early, with anti-pinch.
+    - action: close_lid
+      then:
+        - polar_feeder.close_now: feeder
+    - action: refilled
+      then:
+        - polar_feeder.refilled: feeder
+    - action: set_meal
+      variables:
+        slot: int      # 1..12
+        hour: int
+        minute: int
+        enabled: bool
+      then:
+        - lambda: |-
+            datetime::TimeEntity *t[] = {id(meal1_time), id(meal2_time), id(meal3_time), id(meal4_time), id(meal5_time), id(meal6_time), id(meal7_time), id(meal8_time), id(meal9_time), id(meal10_time), id(meal11_time), id(meal12_time)};
+            switch_::Switch *e[] = {id(meal1_enabled), id(meal2_enabled), id(meal3_enabled), id(meal4_enabled), id(meal5_enabled), id(meal6_enabled), id(meal7_enabled), id(meal8_enabled), id(meal9_enabled), id(meal10_enabled), id(meal11_enabled), id(meal12_enabled)};
+            if (slot < 1 || slot > 12 || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+              ESP_LOGW("main", "set_meal: invalid arguments");
+              return;
+            }
+            auto call = t[slot - 1]->make_call();
+            call.set_time(hour, minute, 0);
+            call.perform();
+            e[slot - 1]->control(enabled);
+    # Sound (polar_sound, UNTESTED). index 0..223 (0x00..0xDF); force = ignore quiet hours.
+    - action: play_sound
+      variables:
+        index: int
+        force: bool
+      then:
+        - polar_sound.play:
+            id: snd
+            index: !lambda 'return index;'
+            force: !lambda 'return force;'
+    - action: sound_volume
+      variables:
+        level: int     # 0..15 -> 0xE0 + level (WTN6 [I]); sent now and before every play
+      then:
+        - polar_sound.set_volume:
+            id: snd
+            level: !lambda 'return level;'
+    - action: sound_stop
+      then:
+        - polar_sound.stop: snd
+    - action: sound_send   # raw byte 0..255, test use (0x00..0xDF obey the sound switch / quiet hours)
+      variables:
+        code: int
+      then:
+        - polar_sound.send:
+            id: snd
+            code: !lambda 'return code;'
+    - action: call_pet     # manual "call the pet" with the configured sound and repeats
+      then:
+        - polar_sound.call_start: snd
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+    # The OTA receive loop blocks every other loop() (no timeouts run): brake and cool off first.
+    on_begin:
+      - script.execute: stop_all
+    on_error:
+      - logger.log: {format: "OTA failed: outputs stay safe (stop all ran at OTA start)", level: ERROR}
+
+safe_mode:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  ap:
+    ssid: "${device_name} Fallback"
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 3
+  auth:
+    type: digest
+    username: admin
+    password: !secret ota_password
+
+time:
+  - platform: homeassistant
+    id: ha_time
+  - platform: sntp
+    id: sntp_time
+
+i2c:
+  id: bus0
+  sda: GPIO7   # AW9523B_i2cInit @0x4200d9c8: I2C0 SDA=7, SCL=8, 100 kHz, internal pull-ups
+  scl:
+    number: GPIO8
+    ignore_strapping_warning: true
+  frequency: 100kHz
+  scan: true
+
+aw9523b:
+  - id: aw
+    address: 0x58
+    reset_pin:
+      number: GPIO9            # RSTN, low 200 ms then high (stock); also the download-mode strap
+      ignore_strapping_warning: true
+    reset_duration: 200ms
+    # Both H-bridges braked from the first output write: P0_5, P0_6 (tray), P1_6, P1_7 (lid) = 1
+    # (Motor_init @0x4200d1a2, Door_Motor_init @0x4200d1e8).
+    initial_high_pins: [5, 6, 14, 15]
+    input_pins: [0, 1]         # HW revision straps (0x04 = 0x03)
+    port0_push_pull: true      # GCR 0x11 = 0x10
+    # OURS: on shutdown/recovery force brakes (5, 6, 14, 15 high) and Peltier P1_4 low.
+    fail_safe_pins: [5, 6, 12, 14, 15]
+    # OURS: read back outputs/direction/GCR; on mismatch or I2C failures pulse RSTN and re-init.
+    verify_interval: 1s
+    on_recover:
+      - lambda: |-
+          ESP_LOGE("main", "AW9523B recovery (%s): faulting both motors", reason.c_str());
+          id(tray).force_fault("expander reset");
+          id(lid).force_fault("expander reset");
+      - script.execute: stop_all
+
+globals:
+  - id: hw_rev_ok
+    type: bool
+    initial_value: "false"
+  - id: low_batt_count
+    type: int
+    initial_value: "0"
+  - id: low_batt_lockout
+    type: bool
+    initial_value: "false"
+
+output:
+  - platform: gpio
+    id: led_p10              # P1_0: fault / alarm LED (AlarmLed_init @0x4200d162, E 5.6)
+    pin: {aw9523b: aw, number: 8, mode: {output: true}}
+  - platform: gpio
+    id: led_p11              # P1_1: status LED
+    pin: {aw9523b: aw, number: 9, mode: {output: true}}
+  - platform: ledc
+    id: ir_tx                # AllDet_init: LEDC ch0 timer0, 38 kHz, duty 127/256 during feeds
+    pin:
+      number: GPIO2
+      ignore_strapping_warning: true
+    frequency: 38000Hz
+
+switch:
+  - platform: template
+    id: serve_enabled          # OURS: serve_and_return interval schedule (only acts in that feed mode)
+    name: "Serve schedule enabled"
+    icon: mdi:calendar-clock
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: gpio
+    id: en_p04
+    name: "Power enable P0_4"
+    entity_category: config
+    restore_mode: ALWAYS_OFF
+    pin: {aw9523b: aw, number: 4, mode: {output: true}}
+  - platform: gpio
+    id: en_p07
+    name: "Power enable P0_7"
+    entity_category: config
+    restore_mode: ALWAYS_OFF
+    pin: {aw9523b: aw, number: 7, mode: {output: true}}
+  - platform: gpio
+    id: peltier              # P1_4 "GPIO_PTC_ON" (CTRL_THREAD_coolHanlde @0x4200e6f6).
+    internal: true           # only polar_cooling drives it; HA sees the "Peltier" binary sensor
+    restore_mode: ALWAYS_OFF
+    pin: {aw9523b: aw, number: 12, mode: {output: true}}
+  - platform: template
+    id: cooling_enabled
+    name: "Cooling enabled (UNTESTED)"
+    icon: mdi:snowflake
+    optimistic: true
+    # Was ALWAYS_OFF (fan wiring unknown). Fan confirmed switched with the Peltier (docs/hardware.md) and 12 h of
+    # runs without trouble; serve_and_return needs cooling to survive reboots and power cuts.
+    restore_mode: RESTORE_DEFAULT_OFF
+    on_turn_on:
+      - lambda: 'id(cooling).evaluate_now();'
+  - platform: template
+    id: thaw_rule
+    name: "Cooling thaw rule (stock)"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: leds_enabled
+    name: "LEDs enabled"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    id: sound_enabled        # master gate (stock soundSwitch, FUN_ram_4200c276); blocks every sound byte
+    name: "Sound enabled (UNTESTED)"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: sound_quiet          # OURS: no automatic sounds between the quiet start and end times
+    name: "Sound quiet hours"
+    icon: mdi:sleep
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: call_enabled         # stock: sound 1 at lid open (FEED_PLAN_openDoorHandle @0x4200945e). OURS: off by default
+    name: "Call the pet at meals"
+    icon: mdi:bullhorn
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: call_stop_on_pet     # stock ringerMode SMART: a pet on GPIO20 ends the ringer (FUN_ram_4200a23e)
+    name: "Call stops when pet seen"
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+  - platform: template
+    id: meal1_enabled
+    name: "Meal 1 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal2_enabled
+    name: "Meal 2 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal3_enabled
+    name: "Meal 3 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal4_enabled
+    name: "Meal 4 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal5_enabled
+    name: "Meal 5 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal6_enabled
+    name: "Meal 6 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal7_enabled
+    name: "Meal 7 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal8_enabled
+    name: "Meal 8 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal9_enabled
+    name: "Meal 9 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal10_enabled
+    name: "Meal 10 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal11_enabled
+    name: "Meal 11 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+  - platform: template
+    id: meal12_enabled
+    name: "Meal 12 enabled"
+    icon: mdi:food
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+
+datetime:
+  - platform: template
+    id: serve_start            # OURS: serve_and_return: first serve of the day; then every "Serve interval"
+    name: "Serve first meal"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "08:00"
+  - platform: template
+    id: meal1_time
+    name: "Meal 1 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "08:00"
+  - platform: template
+    id: meal2_time
+    name: "Meal 2 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "09:00"
+  - platform: template
+    id: meal3_time
+    name: "Meal 3 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "10:00"
+  - platform: template
+    id: meal4_time
+    name: "Meal 4 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "11:00"
+  - platform: template
+    id: meal5_time
+    name: "Meal 5 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "12:00"
+  - platform: template
+    id: meal6_time
+    name: "Meal 6 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "13:00"
+  - platform: template
+    id: meal7_time
+    name: "Meal 7 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "14:00"
+  - platform: template
+    id: meal8_time
+    name: "Meal 8 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "15:00"
+  - platform: template
+    id: meal9_time
+    name: "Meal 9 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "16:00"
+  - platform: template
+    id: meal10_time
+    name: "Meal 10 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "17:00"
+  - platform: template
+    id: meal11_time
+    name: "Meal 11 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "18:00"
+  - platform: template
+    id: meal12_time
+    name: "Meal 12 time"
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "19:00"
+  - platform: template
+    id: quiet_start
+    name: "Sound quiet hours start"
+    entity_category: config
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "21:00"
+  - platform: template
+    id: quiet_end
+    name: "Sound quiet hours end"
+    entity_category: config
+    type: time
+    optimistic: true
+    restore_value: true
+    initial_value: "07:00"
+
+number:
+  # OURS: serve_and_return settings (docs/feeding-strategies.md)
+  - platform: template
+    id: serve_interval
+    name: "Serve interval (min)"
+    icon: mdi:timer-sync-outline
+    optimistic: true
+    restore_value: true
+    min_value: 15
+    max_value: 720
+    step: 15
+    initial_value: 120
+    mode: box
+  - platform: template
+    id: serve_no_show
+    name: "Serve no-show close (min)"
+    icon: mdi:timer-off-outline
+    optimistic: true
+    restore_value: true
+    min_value: 1
+    max_value: 240
+    step: 1
+    initial_value: 30
+    mode: box
+  - platform: template
+    id: serve_pet_gone
+    name: "Serve close after pet gone (min)"
+    icon: mdi:cat
+    optimistic: true
+    restore_value: true
+    min_value: 0.5
+    max_value: 30
+    step: 0.5
+    initial_value: 2
+    mode: box
+  - platform: template
+    id: serve_max_open
+    name: "Serve max open (min)"
+    icon: mdi:timer-alert-outline
+    optimistic: true
+    restore_value: true
+    min_value: 1
+    max_value: 240
+    step: 1
+    initial_value: 45
+    mode: box
+  - platform: template
+    id: sound_volume         # 0xE0 + level before each play (WTN6 [I]); stock only ever sends 0xEF
+    name: "Sound volume"
+    icon: mdi:volume-medium
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 15
+    step: 1
+    initial_value: 4           # OURS: low for the first listening test
+    mode: slider
+  - platform: template
+    id: call_repeats         # repeats after the first call; 0 = one call (stock ringerMode NORMAL)
+    name: "Call repeats"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 30
+    step: 1
+    initial_value: 5           # stock ringerDuration 10 min / ringerInterval 2 min (Dev_Attr_Init @0x4200bd2c)
+    mode: box
+  - platform: template
+    id: call_interval
+    name: "Call repeat interval"
+    entity_category: config
+    unit_of_measurement: min
+    optimistic: true
+    restore_value: true
+    min_value: 0.5
+    max_value: 60
+    step: 0.5
+    initial_value: 2           # stock ringerInterval default 2 min
+    mode: box
+  - platform: template
+    id: lid_open_minutes
+    name: "Lid open minutes (0 = until close)"
+    icon: mdi:timer-outline
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 1440
+    step: 1
+    initial_value: 240         # app closeDoorTime default 4 h
+    mode: box
+  - platform: template
+    id: lead_minutes
+    name: "Pre-position lead minutes"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 240
+    step: 1
+    initial_value: 30          # One_PlanCheck @0x4200ab0a: 1800 s
+    mode: box
+  - platform: template
+    id: filled_compartments
+    name: "Filled compartments"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: 1
+    max_value: 12
+    step: 1
+    initial_value: 12          # clamped to the compartment count
+    mode: box
+  - platform: template
+    id: cool_setpoint
+    name: "Cooling setpoint"
+    icon: mdi:thermometer
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    min_value: 2.0             # OURS: never below 2 C (freezing / ice on the NTC)
+    max_value: 15.0
+    step: 0.5
+    initial_value: 12.0        # stock @0x3c0fae68
+    on_value:
+      - lambda: 'id(cooling).evaluate_now();'
+  - platform: template
+    id: cool_hysteresis
+    name: "Cooling hysteresis"
+    entity_category: config
+    unit_of_measurement: "°C"
+    optimistic: true
+    restore_value: true
+    min_value: 0.0
+    max_value: 3.0
+    step: 0.1
+    initial_value: 0.0         # stock: none
+  - platform: template
+    id: cool_max_on
+    name: "Cooling max continuous on (min, 0 = no limit)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 1440
+    step: 1
+    initial_value: 10          # OURS: short while the fan is untested
+    mode: box
+  - platform: template
+    id: meal1_open
+    name: "Meal 1 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal2_open
+    name: "Meal 2 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal3_open
+    name: "Meal 3 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal4_open
+    name: "Meal 4 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal5_open
+    name: "Meal 5 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal6_open
+    name: "Meal 6 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal7_open
+    name: "Meal 7 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal8_open
+    name: "Meal 8 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal9_open
+    name: "Meal 9 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal10_open
+    name: "Meal 10 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal11_open
+    name: "Meal 11 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+  - platform: template
+    id: meal12_open
+    name: "Meal 12 lid open minutes (-1 = global)"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    min_value: -1
+    max_value: 1440
+    step: 1
+    initial_value: -1
+    mode: box
+
+select:
+  - platform: template
+    id: compartments_select
+    name: "Compartments"
+    entity_category: config
+    optimistic: true
+    restore_value: true
+    options: ["3", "6", "9", "12"]
+    initial_option: "${compartments_default}"
+    on_value:
+      - lambda: |-
+          static const uint8_t N[] = {3, 6, 9, 12};
+          if (i < 4) id(tray).change_compartments(N[i]);
+          // Keep "Filled compartments" within the compartment count (it was shown as 12 with 3).
+          if (i < 4 && !std::isnan(id(filled_compartments).state) && id(filled_compartments).state > N[i]) {
+            auto call = id(filled_compartments).make_call();
+            call.set_value(N[i]);
+            call.perform();
+          }
+  - platform: template
+    id: feed_mode
+    name: "Feed mode"
+    optimistic: true
+    restore_value: true
+    options: ["rotate_and_open", "lid_only", "serve_and_return"]
+    initial_option: "rotate_and_open"
+  - platform: template
+    id: serve_choice
+    name: "Serve compartment choice"
+    icon: mdi:swap-horizontal
+    optimistic: true
+    restore_value: true
+    options: ["alternate", "first storage only (2)", "last storage only (3)"]
+    initial_option: "alternate"
+
+polar_tray:
+  id: tray
+  motor_pin_a: {aw9523b: aw, number: 5, mode: {output: true}}   # P0_5
+  motor_pin_b: {aw9523b: aw, number: 6, mode: {output: true}}   # P0_6
+  gate_pin:
+    number: GPIO10
+    mode: {input: true, pullup: true}
+    allow_other_uses: true
+  compartments: ${compartments_default}
+  current_pin: GPIO5
+  current_sensing: true
+  stall_threshold: 400
+  stall_samples: 6
+  stall_retries: 3
+  edge_timeout: 60s
+  max_move_time: 90s
+  gate_ignore: 500ms
+  gate_debounce: 10ms        # OURS level-stable filter
+  home_width_ratio: 2.0      # OURS: widest mark >= 2 x runner-up
+  max_invalid_samples: 20    # OURS: 10 s without a valid ADC2 sample while moving -> fault
+  power_switches: [en_p04, en_p07]
+  position:
+    name: "Tray position"
+  target:
+    name: "Tray target"
+  mark_interval:
+    name: "Tray mark interval"
+  pulse_width:
+    name: "Tray mark width"
+  motor_current:
+    name: "Tray motor current (ADC2 raw)"
+  adc_invalid:
+    name: "Tray ADC2 invalid samples (last move)"
+  state_text:
+    name: "Tray state"
+  homing_state:
+    name: "Tray homing"
+  fault:
+    name: "Tray fault"
+  moving:
+    name: "Tray moving"
+  homed:
+    name: "Tray homed"
+
+polar_lid:
+  id: lid
+  close_pin: {aw9523b: aw, number: 15, mode: {output: true}}   # P1_7
+  open_pin: {aw9523b: aw, number: 14, mode: {output: true}}    # P1_6
+  lid_sensor: lid_sensor
+  # Level of GPIO19 at an end stop. Stock code implies high; CONFIRM in test step 4 before any feed test.
+  sensor_end_level: true
+  min_travel: 1000ms         # OURS: sensor not accepted before 1 s of travel (stock: from t = 0)
+  close_stall_samples: 2     # OURS anti-pinch: 2 x 100 ms over threshold while closing -> reopen at once
+  close_sample_interval: 100ms
+  inrush_blanking: 300ms
+  pet_sensor: pet_present
+  current_sensor: lid_current_adc
+  stall_threshold: 0.400
+  stall_samples: 6
+  stall_retries: 3
+  max_move_time: 60s
+  check_signal_time: 5s
+  nocheck_signal_time: 10s
+  run_on: 1000ms
+  power_switches: [en_p04, en_p07]
+  state_text:
+    name: "Lid state"
+  fault:
+    name: "Lid fault"
+  closed:
+    name: "Lid closed"
+  motor_current:
+    name: "Lid motor current"
+
+polar_feeder:
+  id: feeder
+  tray: tray
+  lid: lid
+  time_id: ha_time
+  pet_sensor: pet_present
+  temperature: food_temp
+  ir_emitter: ir_tx
+  mode_select: feed_mode
+  open_minutes: lid_open_minutes
+  lead_minutes: lead_minutes
+  filled_compartments: filled_compartments
+  power_switches: [en_p04, en_p07]
+  ir_settle: 1s
+  boot_grace: 60s
+  serve:
+    enabled: serve_enabled
+    start: serve_start
+    interval: serve_interval
+    compartment_choice: serve_choice
+    no_show_minutes: serve_no_show
+    pet_gone_minutes: serve_pet_gone
+    max_open_minutes: serve_max_open
+    rest_compartment: 1
+    ir_settle: 3s
+  meals:
+    - {time: meal1_time, enabled: meal1_enabled, open_minutes: meal1_open}
+    - {time: meal2_time, enabled: meal2_enabled, open_minutes: meal2_open}
+    - {time: meal3_time, enabled: meal3_enabled, open_minutes: meal3_open}
+    - {time: meal4_time, enabled: meal4_enabled, open_minutes: meal4_open}
+    - {time: meal5_time, enabled: meal5_enabled, open_minutes: meal5_open}
+    - {time: meal6_time, enabled: meal6_enabled, open_minutes: meal6_open}
+    - {time: meal7_time, enabled: meal7_enabled, open_minutes: meal7_open}
+    - {time: meal8_time, enabled: meal8_enabled, open_minutes: meal8_open}
+    - {time: meal9_time, enabled: meal9_enabled, open_minutes: meal9_open}
+    - {time: meal10_time, enabled: meal10_enabled, open_minutes: meal10_open}
+    - {time: meal11_time, enabled: meal11_enabled, open_minutes: meal11_open}
+    - {time: meal12_time, enabled: meal12_enabled, open_minutes: meal12_open}
+  state_text:
+    name: "Feeder state"
+  last_event:
+    name: "Feeder last event"
+  next_meal:
+    name: "Next meal"
+  next_compartment:
+    name: "Next compartment"
+  empty:
+    name: "Run empty"
+  feeding:
+    name: "Feeding"
+  thaw:
+    name: "Thaw latch"
+  anti_pinch:
+    name: "Lid anti-pinch tripped"
+  # Stock sends 0xEF when a feed job is accepted (Feed_Handle @0x4200ae46), probably WTN6 "volume max" [I].
+  # OURS: not sent; the "Sound volume" byte goes before every play instead.
+  on_lid_opened:
+    # Stock: sound 1 at lid open (FEED_PLAN_openDoorHandle @0x4200945e), then the SMART ringer.
+    # OURS: only for a meal or Feed now (not "Open lid"), only with "Call the pet at meals" on.
+    - if:
+        condition:
+          lambda: 'return id(feeder).is_serving();'
+        then:
+          - polar_sound.call_start: {id: snd, meal: true}
+  on_feed_end:
+    - polar_sound.call_stop: snd   # stock rings only in FEED_PLAN_feedOngoingHandle @0x4200a356
+
+polar_sound:
+  id: snd
+  pin: GPIO6                 # BSP_aduioInit @0x4200d738: output, idle high
+  time_id: ha_time
+  enable: sound_enabled
+  volume: sound_volume
+  volume_before_play: true
+  quiet_enable: sound_quiet
+  quiet_start: quiet_start
+  quiet_end: quiet_end
+  pet_sensor: pet_present
+  call_enable: call_enabled
+  call_repeats: call_repeats
+  call_interval: call_interval
+  call_stop_on_pet: call_stop_on_pet
+  call_default: 1
+  sounds:
+    1: "meal call (stock)"
+  listed_indices: 16
+  play_select:
+    name: "Play sound"
+  call_sound:
+    name: "Call sound"
+    entity_category: config
+  status:
+    name: "Sound status"
+
+polar_cooling:
+  id: cooling
+  peltier: peltier
+  temperature: food_temp
+  on_battery: on_battery
+  enable: cooling_enabled
+  thaw_rule: thaw_rule
+  feeder: feeder
+  setpoint: cool_setpoint
+  hysteresis: cool_hysteresis
+  max_on_minutes: cool_max_on
+  allowed: ${cooling_allowed}
+  power_switches: [en_p04, en_p07]
+  assert_power_switches: ${cooling_asserts_enables}
+  interval: 5min
+  min_off_time: 60s
+  duty:
+    name: "Peltier duty (1 h)"
+  since_off:
+    name: "Peltier time since off"
+  state_text:
+    name: "Cooling state"
+
+script:
+  - id: stop_all
+    mode: restart
+    then:
+      - logger.log: {format: "STOP ALL: brake motors, cancel feed, cooling off", level: WARN}
+      - polar_feeder.cancel: feeder
+      - polar_tray.stop: tray
+      - polar_lid.stop: lid
+      - switch.turn_off: cooling_enabled
+      - switch.turn_off: peltier
+      - polar_sound.call_stop: snd
+  - id: button_hold
+    mode: restart
+    then:
+      # Stock KeyRestore_TimerCallback @0x4201d42e: 3 s hold = Wi-Fi reset. OURS: 3 s hold = stop all.
+      - delay: 3s
+      - logger.log: "Button held 3 s"
+      - script.execute: stop_all
+
+button:
+  - platform: template
+    name: "Stop all"
+    icon: mdi:stop-circle
+    on_press:
+      - script.execute: stop_all
+  - platform: template
+    name: "Feed now"
+    icon: mdi:food
+    on_press:
+      - polar_feeder.feed_now: {id: feeder}
+  - platform: template
+    name: "Open lid"
+    icon: mdi:arrow-up-box
+    on_press:
+      - polar_feeder.open_lid: feeder
+  - platform: template
+    name: "Close lid"
+    icon: mdi:arrow-down-box
+    on_press:
+      - polar_feeder.close_now: feeder
+  - platform: template
+    name: "Refilled"
+    icon: mdi:refresh
+    on_press:
+      - polar_feeder.refilled: feeder
+  - platform: template
+    name: "Tray home"
+    on_press:
+      - polar_tray.home: tray
+  - platform: template
+    name: "Tray step"
+    on_press:
+      - polar_tray.step: tray
+  - platform: template
+    name: "Clear faults"
+    entity_category: config
+    on_press:
+      - polar_tray.clear_fault: tray
+      - polar_lid.clear_fault: lid
+  # --- test aids (docs/esphome-firmware.md test plan); no pet check, no feed logic
+  - platform: template
+    name: "Test: tray jog forward 0.5 s"
+    entity_category: diagnostic
+    on_press:
+      - polar_tray.jog: {id: tray, forward: true, duration: 500ms}
+  - platform: template
+    name: "Test: lid jog open 0.3 s"
+    entity_category: diagnostic
+    on_press:
+      - polar_lid.jog: {id: lid, open: true, duration: 300ms}
+  - platform: template
+    name: "Test: lid jog close 0.3 s"
+    entity_category: diagnostic
+    on_press:
+      - polar_lid.jog: {id: lid, open: false, duration: 300ms}
+  - platform: template
+    name: "Test: lid open (manual profile)"
+    entity_category: diagnostic
+    on_press:
+      - polar_lid.open: {id: lid, profile: manual}
+  - platform: template
+    name: "Test: lid close (manual profile, no pet check)"
+    entity_category: diagnostic
+    on_press:
+      - polar_lid.close: {id: lid, profile: manual}
+  - platform: template
+    name: "Sound: play meal call (0x01)"
+    icon: mdi:bullhorn
+    on_press:
+      - polar_sound.play: {id: snd, index: 1, force: true}
+  - platform: template
+    name: "Sound: call the pet now"
+    icon: mdi:bullhorn-variant
+    on_press:
+      - polar_sound.call_start: snd
+  - platform: template
+    name: "Sound stop"
+    icon: mdi:volume-off
+    on_press:
+      - polar_sound.stop: snd
+  - platform: template
+    name: "Test: sound send volume now"
+    entity_category: diagnostic
+    on_press:
+      - polar_sound.set_volume:
+          id: snd
+          level: !lambda 'return (int) id(sound_volume).state;'
+  - platform: template
+    name: "Test: sound send 0xEF (stock feed-start byte)"
+    entity_category: diagnostic
+    on_press:
+      - polar_sound.send: {id: snd, code: 0xEF}
+  - platform: template
+    name: "Test: sound loop current (0xF2)"
+    entity_category: diagnostic
+    on_press:
+      - polar_sound.loop: snd
+  - platform: restart
+    name: "Restart"
+
+binary_sensor:
+  - platform: template
+    name: "Peltier"
+    icon: mdi:snowflake
+    lambda: 'return id(peltier).state;'
+  - platform: gpio
+    id: on_battery
+    name: "On battery"
+    pin: GPIO0           # 0 = DC, 1 = battery (Power_Handle @0x4200c948)
+    on_release:          # DC back: release the low-battery lockout
+      - lambda: |-
+          id(low_batt_count) = 0;
+          if (id(low_batt_lockout)) {
+            id(low_batt_lockout) = false;
+            if (id(hw_rev_ok)) {
+              id(tray).set_inhibit(false, "DC power back");
+              id(lid).set_inhibit(false, "DC power back");
+            }
+          }
+  - platform: gpio
+    id: tray_gate
+    name: "Tray gate (GPIO10)"
+    entity_category: diagnostic
+    use_interrupt: false     # the tray component owns the GPIO10 interrupt (ESPHome also forces polling)
+    pin:
+      number: GPIO10
+      mode: {input: true, pullup: true}
+      allow_other_uses: true
+  - platform: gpio
+    id: lid_sensor
+    name: "Lid sensor (GPIO19)"
+    entity_category: diagnostic
+    pin: GPIO19
+  - platform: gpio
+    id: pet_present
+    name: "Pet present (IR)"
+    device_class: occupancy
+    pin: GPIO20          # 1 = something in front (Infrared_Handle @0x4200c604)
+  - platform: gpio
+    id: button_key
+    name: "Button"
+    pin:
+      number: GPIO18
+      inverted: true     # active low (Key_init @0x4200d10c)
+    filters:
+      - delayed_on_off: 50ms
+    on_press:
+      - script.execute: button_hold
+    on_release:
+      - script.stop: button_hold
+
+sensor:
+  - platform: adc
+    id: ntc_v
+    pin: GPIO1
+    attenuation: 12db    # Adc_init @0x4200d26e: 11 dB
+    samples: 10          # Read_Ntc_Temp @0x4200d488: mean of 10 samples
+    update_interval: 10s
+    internal: true
+  - platform: resistance
+    id: ntc_r
+    sensor: ntc_v
+    configuration: DOWNSTREAM
+    resistor: 10kOhm     # 10k pull-up to 3.3 V
+    reference_voltage: 3.3V
+    internal: true
+  - platform: ntc
+    id: food_temp
+    sensor: ntc_r
+    name: "Food temperature"
+    calibration: {b_constant: 3950, reference_temperature: 25C, reference_resistance: 10kOhm}
+    filters:
+      - offset: 0.5      # stock +0.5 C (Read_Ntc_Temp @0x4200d488)
+  - platform: adc
+    id: lid_current_adc  # Read_DoorMotorAdc @0x4200d402: ADC1 ch3, calibrated mV; sampled by polar_lid while moving
+    pin: GPIO3
+    attenuation: 12db
+    update_interval: never
+    internal: true
+  - platform: adc
+    id: bat_raw          # ADC1 ch4, x2 divider (FUN_ram_4200d360)
+    pin: GPIO4
+    attenuation: 12db
+    update_interval: 1s
+    internal: true
+    filters:
+      - multiply: 2.0
+    on_value:
+      - lambda: |-
+          // FUN_ram_4200c88c: on battery, < 3300 mV for 5 loops (2.5 s) -> brake motors, suspend.
+          // OURS: 3 consecutive 1 s samples -> stop all and inhibit motors until DC returns.
+          if (id(on_battery).state && x < 3.3f) {
+            if (++id(low_batt_count) >= 3 && !id(low_batt_lockout)) {
+              id(low_batt_lockout) = true;
+              ESP_LOGE("main", "Battery %.2f V < 3.30 V on battery: motors inhibited", x);
+              id(stop_all).execute();
+              id(tray).set_inhibit(true, "low battery");
+              id(lid).set_inhibit(true, "low battery");
+            }
+          } else {
+            id(low_batt_count) = 0;
+          }
+  - platform: template
+    name: "Battery voltage"
+    unit_of_measurement: V
+    device_class: voltage
+    accuracy_decimals: 2
+    update_interval: 60s
+    lambda: 'return id(bat_raw).state;'
+  - platform: template
+    name: "Battery level"
+    unit_of_measurement: "%"
+    device_class: battery
+    accuracy_decimals: 0
+    update_interval: 60s
+    # Table @0x3c0fa6c0 (FUN_ram_4200c81c): 3300 mV = 0 %, +120 mV per 10 %, 4500 mV = 100 %
+    lambda: |-
+      float mv = id(bat_raw).state * 1000.0f;
+      if (std::isnan(mv)) return NAN;
+      return clamp((mv - 3300.0f) / 12.0f, 0.0f, 100.0f);
+  - platform: wifi_signal
+    name: "WiFi signal"
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: uptime
+    name: "Uptime"
+    entity_category: diagnostic
+  - platform: internal_temperature
+    name: "ESP temperature"
+    entity_category: diagnostic
+
+text_sensor:
+  - platform: template
+    id: hw_rev
+    name: "Hardware revision"
+    entity_category: diagnostic
+  - platform: debug
+    reset_reason:
+      name: "Reset reason"
+
+debug:
+  update_interval: 60s
+
+interval:
+  # Status LEDs, every 500 ms like stock FUN_ram_4200c73a. Stock: error or battery -> P1_0 solid; Wi-Fi not up ->
+  # P1_0 blinks 1 s/1 s; otherwise P1_1 by network state (solid = cloud connected). OURS: "cloud" = HA API.
+  - interval: 500ms
+    then:
+      - lambda: |-
+          static uint8_t tick = 0;
+          tick++;
+          const bool blink = (tick / 2) % 2;   // 1 s on / 1 s off
+          bool red = false, green = false;
+          if (id(leds_enabled).state) {
+            const bool fault = id(tray).is_fault() || id(lid).is_fault() || id(low_batt_lockout) || !id(hw_rev_ok);
+            if (fault || id(on_battery).state) {
+              red = true;
+            } else if (!wifi::global_wifi_component->is_connected()) {
+              red = blink;
+            } else if (!api::global_api_server->is_connected()) {
+              green = blink;
+            } else {
+              green = true;
+            }
+          }
+          if (red) id(led_p10).turn_on(); else id(led_p10).turn_off();
+          if (green) id(led_p11).turn_on(); else id(led_p11).turn_off();
+  # Stock CTRL_THREAD_batteryModeHandle @0x4200e4fc: on battery P0_4/P0_7 are on only while a motor moves.
+  - interval: 1s
+    then:
+      - if:
+          condition:
+            lambda: 'return id(on_battery).state && !id(tray).is_busy() && !id(lid).is_busy() && !id(feeder).is_feeding();'
+          then:
+            - switch.turn_off: en_p04
+            - switch.turn_off: en_p07
+  # Cooldown test log (docs/esphome-firmware.md test 9): fan state must be noted by the observer.
+  - interval: 30s
+    then:
+      - if:
+          condition:
+            switch.is_on: cooling_enabled
+          then:
+            - lambda: |-
+                ESP_LOGI("cooldown", "T=%.2f C setpoint=%.1f peltier=%s duty1h=%.1f%%", id(food_temp).state,
+                         id(cool_setpoint).state, id(peltier).state ? "ON" : "off", id(cooling).get_duty());

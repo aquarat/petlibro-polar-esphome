@@ -1,0 +1,233 @@
+# Petlibro Polar PLAF109 wet-food feeder: bring-up image.
+# Board: "PLAF109 MainBoard V1.0 2025.07.22", ESP32-C3-WROOM-02U (4 MB).
+# Project notes and stock flash backups: <workstation> <repo>
+#
+# Bring-up build 2: AW9523B expander (U6) initialised like stock with BOTH MOTORS BRAKED.
+# No motor control exists in this build. Peltier (P1_4) and power enables (P0_4, P0_7)
+# are manual switches for finding the fan wiring; the Peltier auto-offs after 3 min and
+# refuses to start on battery. Pin map: analysis/static/README.md.
+# Never drive the Peltier without also running the fan.
+#
+# Installed into the stock ota_1 slot (0x1e0000) under the STOCK IDF v4.4.6
+# bootloader and partition table; stock app 2.0.38 remains in ota_0.
+# Stock partition table: nvs 0x9000/0x20000, otadata 0x29000, phy 0x2b000,
+# ota_0 0x30000/0x1af000, ota_1 0x1e0000/0x1af000. Later OTA from ESPHome will
+# overwrite ota_0 (stock app) -- backups exist.
+substitutions:
+  device_name: petlibro-polar
+  friendly_name: "Petlibro Polar"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  includes:
+    - aw9523b.h
+  on_boot:
+    priority: 200
+    then:
+      - output.turn_off: aw_rstn     # stock: RSTN low 200 ms, then high
+      - delay: 200ms
+      - output.turn_on: aw_rstn
+      - delay: 20ms
+      - lambda: |-
+          aw9523b::init(id(bus0));
+          id(aw_id).publish_state(str_sprintf("0x%02X", aw9523b::rd(id(bus0), 0x10)));
+      - component.update: aw_inputs
+
+esp32:
+  variant: esp32c3
+  board: esp32-c3-devkitm-1
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+  hardware_uart: UART0   # ISP header (GPIO21 TX / GPIO20 RX), 115200
+
+api:
+  encryption:
+    key: !secret petlibro_polar_api_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+safe_mode:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  ap:
+    ssid: "${device_name} Fallback"
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 3
+  auth:
+    type: digest
+    username: admin
+    password: !secret ota_password
+
+i2c:
+  id: bus0
+  sda: GPIO7
+  scl: GPIO8
+  frequency: 100kHz
+  scan: true
+
+output:
+  - platform: gpio
+    id: aw_rstn
+    pin:
+      number: GPIO9
+      ignore_strapping_warning: true
+
+script:
+  - id: peltier_watchdog
+    mode: restart
+    then:
+      - delay: 3min
+      - logger.log: {format: "Peltier watchdog: 3 min limit reached, switching off", level: WARN}
+      - switch.turn_off: peltier
+
+switch:
+  - platform: template
+    id: peltier
+    name: "Peltier (P1_4)"
+    restore_mode: ALWAYS_OFF
+    lambda: 'return aw9523b::get(12);'
+    turn_on_action:
+      - if:
+          condition:
+            binary_sensor.is_on: on_battery
+          then:
+            - logger.log: {format: "Refusing Peltier: on battery", level: WARN}
+          else:
+            - lambda: 'aw9523b::set(id(bus0), 12, true);'
+            - script.execute: peltier_watchdog
+    turn_off_action:
+      - lambda: 'aw9523b::set(id(bus0), 12, false);'
+      - script.stop: peltier_watchdog
+  - platform: template
+    id: en_p0_4
+    name: "Power enable P0_4"
+    restore_mode: ALWAYS_OFF
+    lambda: 'return aw9523b::get(4);'
+    turn_on_action: [lambda: 'aw9523b::set(id(bus0), 4, true);']
+    turn_off_action: [lambda: 'aw9523b::set(id(bus0), 4, false);']
+  - platform: template
+    id: en_p0_7
+    name: "Power enable P0_7"
+    restore_mode: ALWAYS_OFF
+    lambda: 'return aw9523b::get(7);'
+    turn_on_action: [lambda: 'aw9523b::set(id(bus0), 7, true);']
+    turn_off_action: [lambda: 'aw9523b::set(id(bus0), 7, false);']
+  - platform: template
+    id: led1
+    name: "LED P1_0"
+    restore_mode: ALWAYS_OFF
+    lambda: 'return aw9523b::get(8);'
+    turn_on_action: [lambda: 'aw9523b::set(id(bus0), 8, true);']
+    turn_off_action: [lambda: 'aw9523b::set(id(bus0), 8, false);']
+  - platform: template
+    id: led2
+    name: "LED P1_1"
+    restore_mode: ALWAYS_OFF
+    lambda: 'return aw9523b::get(9);'
+    turn_on_action: [lambda: 'aw9523b::set(id(bus0), 9, true);']
+    turn_off_action: [lambda: 'aw9523b::set(id(bus0), 9, false);']
+
+button:
+  - platform: template
+    name: "All outputs safe"
+    on_press:
+      - switch.turn_off: peltier
+      - lambda: |-
+          aw9523b::shadow = aw9523b::IDLE;
+          aw9523b::flush(id(bus0));
+          ESP_LOGW("aw9523b", "all outputs to idle 0x%04X", aw9523b::shadow);
+
+binary_sensor:
+  - platform: gpio
+    id: on_battery
+    name: "On battery"
+    pin: GPIO0           # 0 = mains/DC, 1 = battery (stock Power_Handle)
+    on_press:
+      - switch.turn_off: peltier
+  - platform: gpio
+    name: "Tray sensor (GPIO10)"
+    pin: {number: GPIO10, mode: {input: true, pullup: true}}
+  - platform: gpio
+    name: "Lid sensor (GPIO19)"
+    pin: GPIO19
+  - platform: gpio
+    name: "Button (GPIO18)"
+    pin: {number: GPIO18, inverted: true}
+  - platform: gpio
+    name: "IR receiver (GPIO20)"
+    pin: GPIO20
+
+debug:
+  update_interval: 60s
+
+text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
+  - platform: template
+    id: aw_id
+    name: "AW9523B ID"
+  - platform: template
+    id: aw_inputs
+    name: "AW9523B inputs and HW rev"
+    update_interval: 30s
+    lambda: |-
+      int p0 = aw9523b::rd(id(bus0), 0x00), p1 = aw9523b::rd(id(bus0), 0x01);
+      if (p0 < 0) return {"read failed"};
+      int r = p0 & 0x03;
+      const char *rev = r == 0 ? "5.0.0" : r == 2 ? "5.1.0" : "5.2.0";
+      return str_sprintf("P0=0x%02X P1=0x%02X rev %s", p0, p1 & 0xFF, rev);
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+    entity_category: diagnostic
+  - platform: uptime
+    name: "Uptime"
+    entity_category: diagnostic
+  - platform: internal_temperature
+    name: "ESP Temperature"
+  - platform: adc
+    id: ntc_v
+    pin: GPIO1
+    attenuation: 12db
+    update_interval: 10s
+    name: "NTC voltage"
+  - platform: resistance
+    id: ntc_r
+    sensor: ntc_v
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+    reference_voltage: 3.3V
+    name: "NTC resistance"
+  - platform: ntc
+    sensor: ntc_r
+    name: "Food temperature"
+    calibration: {b_constant: 3950, reference_temperature: 25C, reference_resistance: 10kOhm}
+  - platform: adc
+    pin: GPIO3
+    attenuation: 12db
+    update_interval: 5s
+    name: "Lid motor current (raw V)"
+  - platform: adc
+    pin: GPIO4
+    attenuation: 12db
+    update_interval: 30s
+    name: "Battery voltage"
+    filters: [multiply: 2.0]

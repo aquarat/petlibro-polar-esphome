@@ -1,0 +1,13 @@
+secrets.yaml
+.esphome/
+.venv/
+__pycache__/
+*.pyc
+# Your own flash dumps and captures: they hold Wi-Fi and cloud credentials. Never commit them.
+firmware/stock/*.bin
+firmware/stock/partitions/
+captures/*_uart_*
+captures/*security*
+third_party/
+analysis/static/work/
+analysis/ghidra/

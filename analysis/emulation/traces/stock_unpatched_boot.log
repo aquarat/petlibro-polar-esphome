@@ -1,0 +1,58 @@
+ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0x8 (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5810,len:0x168c
+load:0x403cc710,len:0x934
+load:0x403ce710,len:0x2e48
+entry 0x403cc710
+I (1) boot: ESP-IDF v4.4.6-dirty 2nd stage bootloader
+I (2) boot: compile time 18:37:10
+I (6) boot: chip revision: v0.3
+I (10) boot.esp32c3: SPI Speed      : 80MHz
+I (10) boot.esp32c3: SPI Mode       : SLOW READ
+I (11) boot.esp32c3: SPI Flash Size : 4MB
+I (17) boot: Enabling RNG early entropy source...
+I (26) boot: Partition Table:
+I (27) boot: ## Label            Usage          Type ST Offset   Length
+I (28) boot:  0 nvs              WiFi data        01 02 00009000 00020000
+I (30) boot:  1 otadata          OTA data         01 00 00029000 00002000
+I (31) boot:  2 phy_init         RF data          01 01 0002b000 00001000
+I (32) boot:  3 ota_0            OTA app          00 10 00030000 001af000
+I (33) boot:  4 ota_1            OTA app          00 11 001e0000 001af000
+I (35) boot: End of partition table
+I (39) esp_image: segment 0: paddr=00030020 vaddr=3c0f0020 size=2be00h (179712) map
+I (99) esp_image: segment 1: paddr=0005be28 vaddr=3fc95600 size=02ec8h ( 11976) load
+I (105) esp_image: segment 2: paddr=0005ecf8 vaddr=40380000 size=01320h (  4896) load
+I (108) esp_image: segment 3: paddr=00060020 vaddr=42000020 size=ecb04h (969476) map
+I (304) esp_image: segment 4: paddr=0014cb2c vaddr=40381320 size=14258h ( 82520) load
+I (321) boot: Loaded app from partition at offset 0x30000
+I (321) boot: Disabling RNG early entropy source...
+I (327) cpu_start: Unicore app
+I (329) cpu_start: Pro cpu up.
+I (348) cpu_start: Pro cpu start user code
+I (348) cpu_start: cpu freq: 160000000
+I (348) cpu_start: Application information:
+I (348) cpu_start: Project name:     AF109
+I (348) cpu_start: App version:      2.0.38
+I (349) cpu_start: Compile time:     Sep 25 2025 18:36:42
+I (349) cpu_start: ELF file SHA256:  509a1e2d623af84c...
+I (349) cpu_start: ESP-IDF:          v4.4.6-dirty
+I (349) cpu_start: Min chip rev:     v0.3
+I (349) cpu_start: Max chip rev:     v0.99 
+I (350) cpu_start: Chip rev:         v0.3
+I (350) heap_init: Initializing. RAM available for dynamic allocation:
+I (351) heap_init: At 3FCA5280 len 00037490 (221 KiB): DRAM
+I (351) heap_init: At 3FCDC710 len 00002950 (10 KiB): STACK/DRAM
+I (351) heap_init: At 50000020 len 00001FE0 (7 KiB): RTCRAM
+I (357) spi_flash: detected chip: gd
+I (358) spi_flash: flash io: dio
+I (360) sleep: Configure to isolate all GPIO pins in sleep state
+I (361) sleep: Enable automatic switching of GPIO sleep configuration
+I (362) coexist: coexist rom version 9387209
+I (364) cpu_start: Starting scheduler.
+I (368) Main_function: [APP] Startup..
+I (369) Main_function: [APP] Free memory: 227388 bytes
+I (370) Main_function: [APP] IDF version: v4.4.6-dirty
+I (388) system_info: SYSYTEM_INFO_init systemInfoParam NULL

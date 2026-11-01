@@ -1,0 +1,306 @@
+      58  SCENARIO inputs
+      58  i2c_param_config port=0 mode=1 SDA=GPIO7 SCL=GPIO8 pullups=1/1 clk=100000 Hz
+      59  gpio_set_level GPIO7 = 1  (ra=0x42046bc2)
+      61  gpio_set_level GPIO8 = 1  (ra=0x42046c4c)
+      67  gpio_config pins=[9] mode=2 pullup=0 pulldown=0 intr=0  (ra=0x4200da34)
+      73  gpio_set_intr_type GPIO9 type=0
+      75  gpio_set_level GPIO9 = 0  (ra=0x4200da3c)
+     277  gpio_set_level GPIO9 = 1  (ra=0x4200da50)
+     289  AW9523B read reg 0x10 -> 23
+     311  AW9523B write reg 0x12 = 0xff
+     316  AW9523B write reg 0x13 = 0xff
+     316  AW9523B write reg 0x04 = 0x03
+     316  AW9523B write reg 0x05 = 0x00
+     320  AW9523B write reg 0x11 = 0x10
+     320  AW9523B OUT P0 = 0x00 (initial)
+     324  AW9523B OUT P1 = 0x00 (initial)
+     329  AW9523B read reg 0x00 -> 01
+     363  AW9523B pin 12 (P1_4 PTC/Peltier) -> 1
+     376  AW9523B pin 5 (P0_5 plate-motor A) -> 1
+     376  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 3100 ms
+     382  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+     382  PLANT tray motor OFF (P0_5=1 P0_6=1)
+     397  AW9523B pin 15 (P1_7 door-motor A) -> 1
+     397  PLANT lid motor CLOSING (P1_7=1 P1_6=0)
+     400  AW9523B pin 14 (P1_6 door-motor B) -> 1
+     400  PLANT lid motor STOP (P1_7=1 P1_6=1)
+     411  gpio_config pins=[18] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200d12c)
+     424  gpio_set_intr_type GPIO18 type=4
+     431  gpio_set_intr_type GPIO18 type=3
+     461  gpio_config pins=[10] mode=1 pullup=1 pulldown=0 intr=4  (ra=0x4200ce48)
+     481  gpio_set_intr_type GPIO10 type=4
+     488  gpio_config pins=[19] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ce68)
+     503  gpio_set_intr_type GPIO19 type=4
+     503  gpio_set_intr_type GPIO19 type=3
+     510  gpio_config pins=[20] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ce88)
+     522  gpio_set_intr_type GPIO20 type=4
+     531  gpio_set_intr_type GPIO20 type=3
+     534  AW9523B pin 7 (P0_7) -> 1
+     537  AW9523B pin 4 (P0_4) -> 1
+     537  gpio_config pins=[0] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ceb6)
+     554  gpio_set_intr_type GPIO0 type=4
+     558  gpio_set_intr_type GPIO0 type=3
+     561  ledc_timer_config speed_mode=0 duty_res=8 bits timer=0 freq=38000 Hz clk_cfg=0
+     570  ledc_channel_config GPIO2 speed_mode=0 channel=0 timer=0 duty=0 hpoint=0
+     573  ledc_set_duty_with_hpoint mode=0 ch=0 duty=0 hpoint=0
+     578  ledc_set_duty mode=0 ch=0 duty=127 (ra=0x4200cf08)
+     586  adc1_config_channel_atten ch4 atten=3 (GPIO4)
+     589  gpio_config pins=[4] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     602  gpio_set_intr_type GPIO4 type=0
+     607  adc1_config_channel_atten ch1 atten=3 (GPIO1)
+     607  gpio_config pins=[1] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     618  gpio_set_intr_type GPIO1 type=0
+     628  adc1_config_channel_atten ch3 atten=3 (GPIO3)
+     631  gpio_config pins=[3] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     644  gpio_set_intr_type GPIO3 type=0
+     649  adc2_config_channel_atten ch0 atten=3 (GPIO5)
+     649  gpio_config pins=[5] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     662  gpio_set_intr_type GPIO5 type=0
+     671  gpio_config pins=[6] mode=2 pullup=0 pulldown=0 intr=0  (ra=0x4200d756)
+     684  gpio_set_intr_type GPIO6 type=0
+     975  gpio_isr_handler_add GPIO18 handler=0x403824ba arg=0x12
+     975  gpio_isr_handler_add GPIO19 handler=0x403824ba arg=0x13
+    1001  ADC1 ch4 read #1 -> raw 2000 (simulated)
+    1011  AW9523B pin 14 (P1_6 door-motor B) -> 0
+    1011  PLANT lid motor CLOSING (P1_7=1 P1_6=0)
+    2585  PLANT lid closed -> GPIO19 = 1
+    2612  gpio_get_level GPIO19 -> 1 (simulated) (ra=0x4201d9d8)
+    3055  AW9523B pin 6 (P0_6 plate-motor B) -> 0
+    3055  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 3094 ms
+    3636  AW9523B pin 14 (P1_6 door-motor B) -> 1
+    3636  PLANT lid motor STOP (P1_7=1 P1_6=1)
+    5753  ADC1 ch4 read #10 -> raw 2000 (simulated)
+    6269  PLANT gate GPIO10 -> 1 (slot 0)
+    6307  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+    6435  PLANT gate GPIO10 -> 0
+    6470  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+    6523  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+    6523  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+    9646  PLANT gate GPIO10 -> 1 (slot 1)
+    9731  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+    9844  PLANT gate GPIO10 -> 0
+    9892  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+    9936  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+    9936  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   13027  PLANT gate GPIO10 -> 1 (slot 2 HOME/wide)
+   13084  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   13599  PLANT gate GPIO10 -> 0
+   13641  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d4b4)
+   13710  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   13710  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   16762  PLANT gate GPIO10 -> 1 (slot 0)
+   16792  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   16928  PLANT gate GPIO10 -> 0
+   16969  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   17013  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   17013  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   20197  PLANT gate GPIO10 -> 1 (slot 1)
+   20284  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   20384  PLANT gate GPIO10 -> 0
+   20424  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   20467  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   20467  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   23558  PLANT gate GPIO10 -> 1 (slot 2 HOME/wide)
+   23649  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   24187  PLANT gate GPIO10 -> 0
+   24224  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d4b4)
+   24286  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   24294  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   24321  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+   24321  PLANT tray motor OFF (P0_5=1 P0_6=1)
+   25214  gpio_get_level GPIO0 -> 0 (simulated) (ra=0x4200c714)
+   25224  AW9523B pin 9 (P1_1) -> 1   [P1_1 toggles ~every 1.2 s from here: LED blink; further toggles omitted]
+   25279  ADC2 ch0 read #1 -> raw 50 (simulated)
+   25305  ADC1 ch3 read #1 -> raw 50 (simulated)
+   25322  ledc_set_duty mode=0 ch=0 duty=0 (ra=0x4200d086)
+   25365  AW9523B pin 12 (P1_4 PTC/Peltier) -> 0
+   25423  AW9523B pin 12 (P1_4 PTC/Peltier) -> 1
+   26073  AW9523B pin 12 (P1_4 PTC/Peltier) -> 0
+   28025  ADC2 ch0 read #10 -> raw 50 (simulated)
+   31285  ADC1 ch3 read #10 -> raw 50 (simulated)
+   35163  EVENT ADC1 ch1 (GPIO1 NTC) raw 1900 -> 1200
+   35932  ADC1 ch4 read #100 -> raw 2000 (simulated)
+   40405  EVENT key GPIO18 -> 0 (press)
+   40452  gpio_get_level GPIO18 -> 0 (simulated) (ra=0x4201d5de)
+   41198  EVENT key GPIO18 -> 1 (release)
+   41227  gpio_get_level GPIO18 -> 1 (simulated) (ra=0x4201d5de)
+   50008  EVENT plate rotate request A
+   50008  SIM rotate request (A): dev_ctrl+4 set_plate_pos=2 curr=1, +3=1 (what Set_Plate_Position does)
+   50569  AW9523B pin 6 (P0_6 plate-motor B) -> 0
+   50569  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 2966 ms
+   53540  PLANT gate GPIO10 -> 1 (slot 0)
+   53548  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   53726  PLANT gate GPIO10 -> 0
+   53729  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   53771  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   53771  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   53786  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+   53786  PLANT tray motor OFF (P0_5=1 P0_6=1)
+   57352  ADC2 ch0 read #100 -> raw 50 (simulated)
+   65194  EVENT lid open request (barnDoorState=1)
+   65194  SIM lid request (open): dev_ctrl+1=4 +8=1 (what Control_Door/barnDoorState does)
+   65246  AW9523B pin 15 (P1_7 door-motor A) -> 0
+   65246  PLANT lid motor OPENING (P1_7=0 P1_6=1)
+   65736  PLANT lid left closed position -> GPIO19 = 0
+   65755  gpio_get_level GPIO19 -> 0 (simulated) (ra=0x4201d9d8)
+   80241  EVENT lid close request (barnDoorState=0)
+   80241  SIM lid request (close): dev_ctrl+1=1 +8=1 (what Control_Door/barnDoorState does)
+   80906  AW9523B pin 15 (P1_7 door-motor A) -> 1
+   80906  PLANT lid motor STOP (P1_7=1 P1_6=1)
+   80917  AW9523B pin 14 (P1_6 door-motor B) -> 0
+   80917  PLANT lid motor CLOSING (P1_7=1 P1_6=0)
+   82504  PLANT lid closed -> GPIO19 = 1
+   82528  gpio_get_level GPIO19 -> 1 (simulated) (ra=0x4201d9d8)
+   84661  AW9523B pin 14 (P1_6 door-motor B) -> 1
+   84661  PLANT lid motor STOP (P1_7=1 P1_6=1)
+   92679  ADC1 ch3 read #100 -> raw 50 (simulated)
+   95143  EVENT IR GPIO20 -> 1
+   97210  EVENT IR GPIO20 -> 0
+  105165  EVENT ADC2 ch0 (GPIO5 plate current) raw -> 3000
+  105247  ADC2 ch0 read #241 -> raw 3000 (simulated)
+  106018  EVENT plate rotate request B
+  106018  SIM rotate request (B, high current): dev_ctrl+4 set_plate_pos=3 curr=2, +3=1 (what Set_Plate_Position does)
+  106535  AW9523B pin 6 (P0_6 plate-motor B) -> 0
+  106535  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 3040 ms
+  109467  AW9523B pin 8 (P1_0) -> 1
+  109499  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+  109499  PLANT tray motor OFF (P0_5=1 P0_6=1)
+  111119  AW9523B pin 5 (P0_5 plate-motor A) -> 0
+  111119  PLANT tray motor ON (P0_5=0 P0_6=1), next gate edge in 76 ms
+  111179  AW9523B pin 8 (P1_0) -> 0
+  111197  PLANT gate GPIO10 -> 1 (slot 1)
+  111238  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+  111374  PLANT gate GPIO10 -> 0
+  111374  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+  112912  AW9523B pin 5 (P0_5 plate-motor A) -> 1
+  112912  PLANT tray motor OFF (P0_5=1 P0_6=1)
+  112916  AW9523B pin 6 (P0_6 plate-motor B) -> 0
+  112916  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 1562 ms
+  114503  PLANT gate GPIO10 -> 1 (slot 2 HOME/wide)
+  114508  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+  115127  PLANT gate GPIO10 -> 0
+  115154  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d4b4)
+  115234  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+  115243  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+  115279  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+  115279  PLANT tray motor OFF (P0_5=1 P0_6=1)
+  115575  AW9523B pin 8 (P1_0) -> 1
+  135138  EVENT ADC2 ch0 raw -> 50
+  135442  ADC2 ch0 read #333 -> raw 50 (simulated)
+  150000  EVENT power-detect GPIO0 -> 1 (DC removed)
+  150021  gpio_get_level GPIO0 -> 1 (simulated) (ra=0x4200c966)
+  150707  AW9523B pin 7 (P0_7) -> 0
+  150712  AW9523B pin 4 (P0_4) -> 0
+  152771  AW9523B pin 8 (P1_0) -> 0
+  158284  EVENT power-detect GPIO0 -> 0 (DC back)
+  158798  gpio_get_level GPIO0 -> 0 (simulated) (ra=0x4200c124)
+      54  REBOOT detected (tick went 158830 -> 54): resetting plant state; scenario stops
+      54  i2c_param_config port=0 mode=1 SDA=GPIO7 SCL=GPIO8 pullups=1/1 clk=100000 Hz
+      54  gpio_set_level GPIO7 = 1  (ra=0x42046bc2)
+      56  gpio_set_level GPIO8 = 1  (ra=0x42046c4c)
+      61  gpio_config pins=[9] mode=2 pullup=0 pulldown=0 intr=0  (ra=0x4200da34)
+      69  gpio_set_intr_type GPIO9 type=0
+      69  gpio_set_level GPIO9 = 0  (ra=0x4200da3c)
+     273  gpio_set_level GPIO9 = 1  (ra=0x4200da50)
+     298  AW9523B write reg 0x12 = 0xff
+     306  AW9523B write reg 0x13 = 0xff
+     311  AW9523B write reg 0x04 = 0x03
+     315  AW9523B write reg 0x05 = 0x00
+     320  AW9523B write reg 0x11 = 0x10
+     323  AW9523B OUT P0 = 0x00 (initial)
+     328  AW9523B OUT P1 = 0x00 (initial)
+     368  AW9523B pin 12 (P1_4 PTC/Peltier) -> 1
+     387  AW9523B pin 5 (P0_5 plate-motor A) -> 1
+     387  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 3100 ms
+     392  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+     392  PLANT tray motor OFF (P0_5=1 P0_6=1)
+     414  AW9523B pin 15 (P1_7 door-motor A) -> 1
+     414  PLANT lid motor CLOSING (P1_7=1 P1_6=0)
+     420  AW9523B pin 14 (P1_6 door-motor B) -> 1
+     420  PLANT lid motor STOP (P1_7=1 P1_6=1)
+     439  gpio_config pins=[18] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200d12c)
+     469  gpio_set_intr_type GPIO18 type=4
+     475  gpio_set_intr_type GPIO18 type=3
+     499  gpio_config pins=[10] mode=1 pullup=1 pulldown=0 intr=4  (ra=0x4200ce48)
+     516  gpio_set_intr_type GPIO10 type=4
+     529  gpio_config pins=[19] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ce68)
+     539  gpio_set_intr_type GPIO19 type=4
+     549  gpio_set_intr_type GPIO19 type=3
+     553  gpio_config pins=[20] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ce88)
+     570  gpio_set_intr_type GPIO20 type=4
+     574  gpio_set_intr_type GPIO20 type=3
+     577  AW9523B pin 7 (P0_7) -> 1
+     577  AW9523B pin 4 (P0_4) -> 1
+     581  gpio_config pins=[0] mode=1 pullup=0 pulldown=0 intr=4  (ra=0x4200ceb6)
+     595  gpio_set_intr_type GPIO0 type=4
+     599  gpio_set_intr_type GPIO0 type=3
+     603  ledc_timer_config speed_mode=0 duty_res=8 bits timer=0 freq=38000 Hz clk_cfg=0
+     612  ledc_channel_config GPIO2 speed_mode=0 channel=0 timer=0 duty=0 hpoint=0
+     616  ledc_set_duty_with_hpoint mode=0 ch=0 duty=0 hpoint=0
+     620  ledc_set_duty mode=0 ch=0 duty=127 (ra=0x4200cf08)
+     628  adc1_config_channel_atten ch4 atten=3 (GPIO4)
+     632  gpio_config pins=[4] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     642  gpio_set_intr_type GPIO4 type=0
+     653  adc1_config_channel_atten ch1 atten=3 (GPIO1)
+     655  gpio_config pins=[1] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     666  gpio_set_intr_type GPIO1 type=0
+     677  adc1_config_channel_atten ch3 atten=3 (GPIO3)
+     679  gpio_config pins=[3] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     692  gpio_set_intr_type GPIO3 type=0
+     702  adc2_config_channel_atten ch0 atten=3 (GPIO5)
+     704  gpio_config pins=[5] mode=0 pullup=0 pulldown=0 intr=0  (ra=0x42049356)
+     717  gpio_set_intr_type GPIO5 type=0
+     722  gpio_config pins=[6] mode=2 pullup=0 pulldown=0 intr=0  (ra=0x4200d756)
+     735  gpio_set_intr_type GPIO6 type=0
+    1008  gpio_isr_handler_add GPIO18 handler=0x403824ba arg=0x12
+    1010  gpio_isr_handler_add GPIO19 handler=0x403824ba arg=0x13
+    1056  AW9523B pin 14 (P1_6 door-motor B) -> 0
+    1056  PLANT lid motor CLOSING (P1_7=1 P1_6=0)
+    2612  PLANT lid closed -> GPIO19 = 1
+    3101  AW9523B pin 6 (P0_6 plate-motor B) -> 0
+    3101  PLANT tray motor ON (P0_5=1 P0_6=0), next gate edge in 3095 ms
+    3674  AW9523B pin 14 (P1_6 door-motor B) -> 1
+    3674  PLANT lid motor STOP (P1_7=1 P1_6=1)
+    6327  PLANT gate GPIO10 -> 1 (slot 0)
+    6350  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+    6506  PLANT gate GPIO10 -> 0
+    6506  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+    6552  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+    6552  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+    9758  PLANT gate GPIO10 -> 1 (slot 1)
+    9841  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+    9966  PLANT gate GPIO10 -> 0
+   10000  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   10056  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   10056  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   13131  PLANT gate GPIO10 -> 1 (slot 2 HOME/wide)
+   13161  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   13665  PLANT gate GPIO10 -> 0
+   13692  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d4b4)
+   13767  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   13780  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   16870  PLANT gate GPIO10 -> 1 (slot 0)
+   16895  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   17049  PLANT gate GPIO10 -> 0
+   17086  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   17131  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   17131  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   20318  PLANT gate GPIO10 -> 1 (slot 1)
+   20410  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   20506  PLANT gate GPIO10 -> 0
+   20542  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d528)
+   20581  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   20584  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   23705  PLANT gate GPIO10 -> 1 (slot 2 HOME/wide)
+   23746  gpio_get_level GPIO10 -> 1 (simulated) (ra=0x4201d4b4)
+   24250  PLANT gate GPIO10 -> 0
+   24285  gpio_get_level GPIO10 -> 0 (simulated) (ra=0x4201d4b4)
+   24344  CALL Plate_Micro_Handle(a0=0x1, a1=0x3c0facb0) ra=0x4201d730
+   24351  CALL FUN_4201dbd4 (plate-move kick)(a0=0x0, a1=0x3c0facb0) ra=0x4200e3bc
+   24374  AW9523B pin 6 (P0_6 plate-motor B) -> 1
+   24374  PLANT tray motor OFF (P0_5=1 P0_6=1)
+   25390  ledc_set_duty mode=0 ch=0 duty=0 (ra=0x4200d086)
+   25430  AW9523B pin 12 (P1_4 PTC/Peltier) -> 0
+   25516  AW9523B pin 12 (P1_4 PTC/Peltier) -> 1
+   26150  AW9523B pin 12 (P1_4 PTC/Peltier) -> 0
+   81645  ADC1 ch4 read #1000 -> raw 2000 (simulated)
