@@ -23,6 +23,8 @@ revision 5.2.0, stock app AF109 2.0.38, 3-compartment tray, mains power.
   - `serve_and_return`: keep food in the cooled rear compartments; on an interval bring one to the front,
     ring, wait for the pet, close a set time after the pet leaves (or on no-show / max time), and return
     the food to the cold. See `docs/feeding-strategies.md`.
+  - `serve_on_demand`: the same cycle with no schedule, started when the pet breaks the IR beam. The lid stays
+    open for at least a set time, then closes once the pet has gone. No bell, as the pet is already there.
 
 What is verified on hardware and what is not: `docs/esphome-firmware.md`, "Verified vs untested".
 
