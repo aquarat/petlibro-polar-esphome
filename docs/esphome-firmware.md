@@ -249,7 +249,7 @@ files are not touched.
   false only for the fan-wiring test.
 - `on_shutdown()` switches the Peltier off, and the hub's fail-safe pins also force P1_4 low.
 - **OTA:** the ESPHome OTA receive loop blocks every other `loop()`, so no timeout runs during an upload.
-  `ota: on_begin` runs stop all (both motors braked, feed cancelled, cooling disabled, Peltier off)
+  `ota: on_begin` runs stop all (both motors braked, feed cancelled, Peltier off, the "Cooling enabled" setting kept)
   before the upload starts.
 - **Stock behaviour (CTRL_THREAD_coolHanlde @0x4200e6f6):** sample-and-hold decision every 300 s; on
   above 12.0 C; off at or below; never on battery; no hysteresis or fan logic. Stock leaves an unbound
@@ -310,6 +310,39 @@ thaw rule never fires in this mode.
   `Serve done (<why>): compartment C back in the cold`. Stop all leaves the tray where it is (event says so).
 - Bell: the existing on_lid_opened hook ("Call the pet at meals"); "Call stops when pet seen" ends it.
 - Cooling switch: restore_mode RESTORE_DEFAULT_OFF (was ALWAYS_OFF) so cooling survives reboots.
+
+## Serve on demand (`polar_feeder`, feed mode `serve_on_demand`, 2026-11-09)
+
+The `serve_and_return` cycle started by the beam instead of a clock. Strategy: docs/feeding-strategies.md.
+The 12 meal slots, the interval schedule and the thaw rule are all unused in this mode. No valid clock is needed.
+
+| Entity / YAML | Default | Meaning |
+|---|---|---|
+| Feed mode | | `serve_on_demand` selects this mode |
+| On-demand enabled | on (restored) | master switch for the trigger; a user Stop all (button, hold, HA action) turns it off |
+| On-demand minimum open (min) | 3 | the lid stays open at least this long |
+| On-demand cooldown (min) | 5 | after any feed ends, the beam is ignored this long |
+| Serve close after pet gone (min) | 2 | shared: close once the beam has been clear this long, after the minimum |
+| Serve max open (min) | 45 | shared: close regardless (still waits for the beam to clear) |
+| Serve compartment choice | alternate | shared |
+| `serve: on_demand_hold` | 300 ms | beam must stay broken this long to count |
+| `serve: on_demand_rearm` | 3 s | beam must be clear this long before it can trigger |
+
+- **The emitter stays on while idle in this mode** (other modes: only during feeds). The receiver reads "present"
+  with the emitter off, so the trigger needs it running. Presence is ignored for `serve: ir_settle` (3 s) after
+  switch-on, and the emitter goes off during the tray return as in the other modes.
+- **Arming needs a clear beam.** A cat still sitting there after the cooldown has to move away first, and a beam
+  that reads blocked permanently never fires.
+- One attempt per beam break. Nothing starts during the 60 s boot grace, if the lid is not known closed, or while
+  a motor is busy. Lid and tray faults and inhibits refuse the feed as usual.
+- **Ready after a reboot:** `home_on_boot` closes the lid and homes the tray, so the first beam break after the
+  60 s boot grace can serve. No cooldown follows a boot or idle close.
+- **Lid position after a Stop all or failed boot close:** the lid state is unknown (GPIO19 is high at both end stops)
+  and a serve needs it known closed, so this mode runs one anti-pinch close when the trigger is active again.
+- "Feed now" in this mode is a normal serve: bell, no-show close, and no minimum open.
+- A Stop all from OTA, low battery or expander recovery leaves "On-demand enabled" alone, so the trigger resumes.
+- Events: `Beam broken: serving compartment C`, `Beam broken: ignored (...)`, then the usual `Serve: closing`
+  and `Serve done` events.
 
 **Homing fix (polar_tray, same day):** homing that started just before the home mark (tray at compartment 3)
 saw the wide mark twice (502, 161, 154, 497 ms) and faulted "widths not distinct", because the second pass of
@@ -514,7 +547,7 @@ Substitutions:
 
 | Substitution | Default | Meaning |
 |---|---|---|
-| `home_on_boot` | `"false"` | Stock is true: close the lid (boot profile), then home the tray |
+| `home_on_boot` | `"true"` (since 2026-11-09) | As stock: close the lid (boot profile), then home the tray, in every feed mode |
 | `enables_on_boot` | `"false"` | Stock is true on DC: P0_4/P0_7 on at boot |
 | `cooling_allowed` | `"false"` | Compile-time gate for the Peltier |
 | `cooling_asserts_enables` | `"true"` | Cooling switches P0_4/P0_7 on before P1_4; set `"false"` only for the fan test |
@@ -601,6 +634,8 @@ Updated 2026-11-01 from docs/findings-log.md (HW rev 5.2.0, 3-compartment tray, 
 | Lid: open/close by sensor, already-closed detection after a reboot, anti-pinch (beam blocked before close, object during close) | Verified |
 | IR pet sensor (break-beam, valid only with the emitter on) | Verified |
 | Sound chip: protocol, volume 0-15, stop, loop, clips 0x00/0x01; quiet hours and manual call (log) | Verified (docs: "Sound test results") |
+| serve_on_demand: beam reading with the lid closed and the emitter always on, trigger, full cycle; boot close and tray home | Verified 2026-11-09 (owner test at the feeder; boot sequence read back over the API) |
+| "Cooling enabled" kept across OTA and restart, on and off | Verified 2026-11-09 (OTA and Restart button; a real power cut not tested) |
 | serve_and_return: no-show path end to end | Verified 2026-11-01; pet path and bell in a real serve: pending |
 | Battery operation, LEDs, P0_4/P0_7 function, 6/12-compartment trays (timed sub-steps), thaw rule, meal call during a feed (S11) | Untested |
 | Expander readback/recovery, OTA stop-all, shutdown hooks | Implemented, untested |

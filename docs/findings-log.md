@@ -221,3 +221,13 @@ Device had rebooted ~3 min earlier (all outputs off, mains, food 22.5 C).
   open 3.9 s, IR clear throughout, closed at 1 min 0 s, tray 2->1, "Serve done (no show)". Pass.
 - Settings for use: no-show 30, pet gone 2, max open 45, interval 120 from 08:00, alternate; bell volume 15,
   14 repeats every 2 min; cooling on, max-on cap 0 (no limit). Schedule left OFF until the pet-path test.
+
+## 2026-11-09 serve_on_demand, home_on_boot, cooling setting (OTA, device at <lan-ip>)
+
+- New feed mode `serve_on_demand`: the beam starts a serve-and-return cycle. The beam reads clear with the lid closed
+  once the emitter runs (it reads "present" with the emitter off).
+- Bug found on hardware: after a reboot the lid state is UNKNOWN, so the trigger was refused ("lid not closed").
+  Fixed by `home_on_boot: "true"`, which closes the lid and homes the tray at every boot, in all modes.
+- Automatic Stop all (OTA, low battery, expander recovery) was saving "Cooling enabled" off. It now only pauses the
+  Peltier; only a Stop all from a person turns the setting off. Tests with the new firmware: OTA with cooling on -> on;
+  restart with cooling on -> on; cooling off, 70 s for the flash save, restart -> off.

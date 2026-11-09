@@ -5,7 +5,7 @@
 # emulation notes analysis/emulation/README.md (E). "OURS" marks behaviour that is not from stock.
 #
 # SAFETY DEFAULTS (development):
-#   - No motor moves at boot unless home_on_boot is "true" (stock closes the lid and homes the tray at boot).
+#   - At boot the lid closes (anti-pinch) and the tray homes to compartment 1, as stock (home_on_boot).
 #   - Cooling is disabled at compile time (cooling_allowed) AND by a runtime switch that is off at boot:
 #     the fan wiring is UNKNOWN and UNTESTED. Never run the Peltier without confirming the fan runs.
 #   - Every motor move has a hard timeout and ends braked (H-bridge 1,1).
@@ -17,7 +17,7 @@ substitutions:
   device_name: petlibro-polar
   friendly_name: "Petlibro Polar"
   # OURS (stock = true): close the lid and home the tray at boot.
-  home_on_boot: "false"
+  home_on_boot: "true"
   # Stock AllDet_init @0x4200ce24 sets P0_4/P0_7 = 1 at boot on DC. What they power is unknown.
   # The tray/lid controllers switch them on before every move anyway.
   enables_on_boot: "false"
@@ -108,7 +108,7 @@ api:
   actions:
     - action: stop_all
       then:
-        - script.execute: stop_all
+        - script.execute: stop_all_user
     - action: tray_home
       then:
         - polar_tray.home: tray
@@ -195,7 +195,7 @@ ota:
     on_begin:
       - script.execute: stop_all
     on_error:
-      - logger.log: {format: "OTA failed: outputs stay safe (stop all ran at OTA start)", level: ERROR}
+      - logger.log: {format: "OTA failed: motors stopped (stop all ran at OTA start)", level: ERROR}
 
 safe_mode:
 
@@ -281,6 +281,12 @@ output:
     frequency: 38000Hz
 
 switch:
+  - platform: template
+    id: on_demand_enabled      # OURS: serve_on_demand beam trigger; a user Stop all turns it off
+    name: "On-demand enabled"
+    icon: mdi:cat
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
   - platform: template
     id: serve_enabled          # OURS: serve_and_return interval schedule (only acts in that feed mode)
     name: "Serve schedule enabled"
@@ -534,6 +540,29 @@ datetime:
     initial_value: "07:00"
 
 number:
+  # OURS: serve_on_demand settings (docs/feeding-strategies.md); also uses "Serve close after pet gone" and "Serve max open"
+  - platform: template
+    id: on_demand_min_open
+    name: "On-demand minimum open (min)"
+    icon: mdi:timer-sand
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 60
+    step: 0.5
+    initial_value: 3
+    mode: box
+  - platform: template
+    id: on_demand_cooldown
+    name: "On-demand cooldown (min)"
+    icon: mdi:timer-pause-outline
+    optimistic: true
+    restore_value: true
+    min_value: 0
+    max_value: 120
+    step: 0.5
+    initial_value: 5
+    mode: box
   # OURS: serve_and_return settings (docs/feeding-strategies.md)
   - platform: template
     id: serve_interval
@@ -838,7 +867,7 @@ select:
     name: "Feed mode"
     optimistic: true
     restore_value: true
-    options: ["rotate_and_open", "lid_only", "serve_and_return"]
+    options: ["rotate_and_open", "lid_only", "serve_and_return", "serve_on_demand"]  # new options go last: the index is persisted
     initial_option: "rotate_and_open"
   - platform: template
     id: serve_choice
@@ -948,6 +977,11 @@ polar_feeder:
     max_open_minutes: serve_max_open
     rest_compartment: 1
     ir_settle: 3s
+    on_demand_enabled: on_demand_enabled
+    on_demand_min_open_minutes: on_demand_min_open
+    on_demand_cooldown_minutes: on_demand_cooldown
+    on_demand_hold: 300ms      # real breaks seen on hardware: 0.6 s and up
+    on_demand_rearm: 3s
   meals:
     - {time: meal1_time, enabled: meal1_enabled, open_minutes: meal1_open}
     - {time: meal2_time, enabled: meal2_enabled, open_minutes: meal2_open}
@@ -984,7 +1018,7 @@ polar_feeder:
     # OURS: only for a meal or Feed now (not "Open lid"), only with "Call the pet at meals" on.
     - if:
         condition:
-          lambda: 'return id(feeder).is_serving();'
+          lambda: 'return id(feeder).is_serving() && !id(feeder).is_beam_serve();'
         then:
           - polar_sound.call_start: {id: snd, meal: true}
   on_feed_end:
@@ -1041,15 +1075,20 @@ polar_cooling:
     name: "Cooling state"
 
 script:
-  - id: stop_all
+  - id: stop_all_user        # OURS: a person pressed stop, so the beam must not start the motors again
     mode: restart
     then:
-      - logger.log: {format: "STOP ALL: brake motors, cancel feed, cooling off", level: WARN}
+      - switch.turn_off: on_demand_enabled
+      - switch.turn_off: cooling_enabled
+      - script.execute: stop_all
+  - id: stop_all             # also run by OTA, low battery and expander recovery: must not change saved settings
+    mode: restart
+    then:
+      - logger.log: {format: "STOP ALL: brake motors, cancel feed, Peltier off", level: WARN}
       - polar_feeder.cancel: feeder
       - polar_tray.stop: tray
       - polar_lid.stop: lid
-      - switch.turn_off: cooling_enabled
-      - switch.turn_off: peltier
+      - lambda: 'id(cooling).pause();'
       - polar_sound.call_stop: snd
   - id: button_hold
     mode: restart
@@ -1057,14 +1096,14 @@ script:
       # Stock KeyRestore_TimerCallback @0x4201d42e: 3 s hold = Wi-Fi reset. OURS: 3 s hold = stop all.
       - delay: 3s
       - logger.log: "Button held 3 s"
-      - script.execute: stop_all
+      - script.execute: stop_all_user
 
 button:
   - platform: template
     name: "Stop all"
     icon: mdi:stop-circle
     on_press:
-      - script.execute: stop_all
+      - script.execute: stop_all_user
   - platform: template
     name: "Feed now"
     icon: mdi:food

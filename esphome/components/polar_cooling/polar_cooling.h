@@ -49,6 +49,8 @@ class PolarCooling : public Component {
 
   /// Re-evaluate at the next loop (e.g. after enabling or a setpoint change).
   void evaluate_now() { this->force_eval_ = true; }
+  /// Peltier off now without touching the user's setting; cooling resumes by itself after the minimum off time.
+  void pause() { this->apply_(false, "paused"); }
   bool is_on() const { return this->on_; }
   float get_duty() const { return this->duty_; }
 

@@ -1,5 +1,18 @@
 # Feeding strategies
 
+## Built: `serve_on_demand` (2026-11-09)
+
+The cat doesn't over-eat, but her food spoils quickly, so the food stays in the cold until she asks for it.
+Feed mode `serve_on_demand` runs the `serve_and_return` cycle when the IR beam is broken, with no clock schedule
+(details and entities: docs/esphome-firmware.md "Serve on demand").
+
+1. Beam broken for 0.3 s with the lid closed: bring the next storage compartment (2 or 3, alternating) to the front.
+2. Open the lid. No bell: the cat is already there.
+3. Stay open for at least "On-demand minimum open" (3 min), then close once the beam has been clear for
+   "Serve close after pet gone" (2 min). "Serve max open" (45 min) still applies.
+4. Close with the usual anti-pinch checks and return the tray to rest compartment 1.
+5. Ignore the beam for "On-demand cooldown" (5 min), then until it has been clear for 3 s.
+
 ## Built: `serve_and_return` (2026-11-01)
 
 The timed cooling lid strategy below, refined by the user: wait for the cat instead of a fixed window.

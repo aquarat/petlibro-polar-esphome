@@ -12,6 +12,9 @@
 // next storage compartment to the front, open, (call the pet), wait for the pet, close once the pet has been
 // gone for the "pet gone" time (or nobody came within the no-show time, or the max-open time ran out), then
 // return the tray to the rest compartment so leftovers go back to the cold.
+//
+// serve_on_demand (OURS): the same serve cycle, started by the cat breaking the IR beam instead of a clock.
+// The receiver only means anything with the emitter running, so this mode keeps the emitter on while idle.
 
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
@@ -35,7 +38,7 @@
 namespace esphome::polar_feeder {
 
 enum class FeedState : uint8_t { IDLE = 0, TRAY, OPENING, ONGOING, WAIT_CLEAR, CLOSING };
-enum class FeedMode : uint8_t { ROTATE_AND_OPEN = 0, LID_ONLY = 1, SERVE_AND_RETURN = 2 };
+enum class FeedMode : uint8_t { ROTATE_AND_OPEN = 0, LID_ONLY = 1, SERVE_AND_RETURN = 2, SERVE_ON_DEMAND = 3 };
 
 struct Meal {
   datetime::TimeEntity *time{nullptr};
@@ -91,6 +94,12 @@ class PolarFeeder : public Component {
   void set_serve_max_open_number(number::Number *n) { this->serve_max_open_ = n; }
   void set_serve_rest_compartment(int c) { this->serve_rest_ = c; }
   void set_serve_settle(uint32_t ms) { this->serve_settle_ms_ = ms; }
+  // serve_on_demand settings
+  void set_on_demand_enabled_switch(switch_::Switch *s) { this->od_enabled_ = s; }
+  void set_on_demand_min_open_number(number::Number *n) { this->od_min_open_ = n; }
+  void set_on_demand_cooldown_number(number::Number *n) { this->od_cooldown_min_ = n; }
+  void set_on_demand_hold(uint32_t ms) { this->od_hold_ms_ = ms; }
+  void set_on_demand_rearm(uint32_t ms) { this->od_rearm_ms_ = ms; }
   void set_state_text_sensor(text_sensor::TextSensor *s) { this->state_text_ = s; }
   void set_event_text_sensor(text_sensor::TextSensor *s) { this->event_text_ = s; }
   void set_next_meal_text_sensor(text_sensor::TextSensor *s) { this->next_text_ = s; }
@@ -121,6 +130,8 @@ class PolarFeeder : public Component {
   /// True while a meal or "Feed now" is running (not a plain "Open lid"). Used by the "call the pet" sound
   /// hook in on_lid_opened (polar_sound); it changes no feeder behaviour.
   bool is_serving() const { return this->is_feeding() && this->feed_serves_; }
+  /// True while a serve started by the beam runs: the cat is already there, so the meal call is skipped.
+  bool is_beam_serve() const { return this->is_feeding() && this->feed_serve_ && this->serve_beam_; }
   bool is_empty() const { return this->next_ > this->filled_count_(); }
   int get_next_compartment() const { return this->is_empty() ? 0 : this->next_; }
   FeedMode get_mode() const;
@@ -134,7 +145,7 @@ class PolarFeeder : public Component {
 
  protected:
   bool start_feed_(int compartment, int32_t minutes, int meal_index, bool consume, bool serves = true);
-  bool start_serve_(int occurrence_index);
+  bool start_serve_(int occurrence_index, bool beam = false);
   void serve_ongoing_(uint32_t now);
   void serve_close_(const char *why);
   int serve_compartment_() const;
@@ -143,6 +154,8 @@ class PolarFeeder : public Component {
   bool serve_storage_(int c) const;
   uint32_t serve_minutes_ms_(number::Number *n, float def) const;
   void serve_schedule_tick_(const ESPTime &t, bool in_grace);
+  void on_demand_idle_(uint32_t now);
+  void on_demand_status_(uint32_t now);
   void end_feed_(const char *result);
   bool position_tray_(int compartment);
   void begin_close_();
@@ -164,7 +177,11 @@ class PolarFeeder : public Component {
   int32_t global_open_minutes_() const;
   uint32_t lead_s_() const;
   bool pet_present_() const { return this->pet_sensor_ != nullptr && this->pet_sensor_->state; }
-  bool serve_mode_() const { return this->get_mode() == FeedMode::SERVE_AND_RETURN; }
+  bool on_demand_mode_() const { return this->get_mode() == FeedMode::SERVE_ON_DEMAND; }
+  bool on_demand_active_() const {
+    return this->on_demand_mode_() && (this->od_enabled_ == nullptr || this->od_enabled_->state);
+  }
+  bool serve_mode_() const { return this->on_demand_mode_() || this->get_mode() == FeedMode::SERVE_AND_RETURN; }
 
   polar_tray::PolarTray *tray_{nullptr};
   polar_lid::PolarLid *lid_{nullptr};
@@ -245,6 +262,21 @@ class PolarFeeder : public Component {
   uint32_t serve_first_pet_ms_{0};
   uint32_t serve_open_ms_{0};
   const char *serve_close_reason_{""};
+  bool serve_beam_{false};     // the running serve was started by the beam (serve_on_demand)
+
+  // serve_on_demand
+  switch_::Switch *od_enabled_{nullptr};
+  number::Number *od_min_open_{nullptr};
+  number::Number *od_cooldown_min_{nullptr};
+  uint32_t od_hold_ms_{300};    // beam must stay broken this long to count
+  uint32_t od_rearm_ms_{3000};  // beam must be clear this long before it can trigger
+  bool od_armed_{false};
+  bool od_edge_active_{false};  // od_edge_ms_ holds the start of the current clear (disarmed) or blocked (armed) spell
+  uint32_t od_edge_ms_{0};
+  bool od_cooldown_{false};     // latched so the 32-bit millis() wrap cannot restart it
+  uint32_t od_end_ms_{0};
+  bool od_lid_checked_{false};        // the one close that learns the lid position has been started
+  bool idle_close_running_{false};    // a boot or idle close is running: it is not a feed, so no cooldown after it
 };
 
 template<typename... Ts> class FeedNowAction final : public Action<Ts...>, public Parented<PolarFeeder> {

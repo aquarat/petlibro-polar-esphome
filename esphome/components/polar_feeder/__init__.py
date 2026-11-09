@@ -72,6 +72,11 @@ CONF_SERVE_PET_GONE = "pet_gone_minutes"
 CONF_SERVE_MAX_OPEN = "max_open_minutes"
 CONF_SERVE_REST = "rest_compartment"
 CONF_SERVE_SETTLE = "ir_settle"
+CONF_OD_ENABLED = "on_demand_enabled"
+CONF_OD_MIN_OPEN = "on_demand_min_open_minutes"
+CONF_OD_COOLDOWN = "on_demand_cooldown_minutes"
+CONF_OD_HOLD = "on_demand_hold"
+CONF_OD_REARM = "on_demand_rearm"
 
 polar_feeder_ns = cg.esphome_ns.namespace("polar_feeder")
 PolarFeeder = polar_feeder_ns.class_("PolarFeeder", cg.Component)
@@ -103,6 +108,13 @@ SERVE_SCHEMA = cv.Schema(
         cv.Optional(CONF_SERVE_REST, default=1): cv.int_range(min=1, max=12),
         # IR receiver reads "present" until the emitter has settled; presence is ignored this long after switch-on
         cv.Optional(CONF_SERVE_SETTLE, default="3s"): cv.positive_time_period_milliseconds,
+        # serve_on_demand: beam-triggered serve cycles
+        cv.Optional(CONF_OD_ENABLED): cv.use_id(switch.Switch),
+        cv.Optional(CONF_OD_MIN_OPEN): cv.use_id(number.Number),
+        cv.Optional(CONF_OD_COOLDOWN): cv.use_id(number.Number),
+        # beam must stay broken this long to count, and be clear this long before it can trigger
+        cv.Optional(CONF_OD_HOLD, default="300ms"): cv.positive_time_period_milliseconds,
+        cv.Optional(CONF_OD_REARM, default="3s"): cv.positive_time_period_milliseconds,
     }
 )
 
@@ -193,11 +205,16 @@ async def to_code(config):
             (CONF_SERVE_NO_SHOW, "set_serve_no_show_number"),
             (CONF_SERVE_PET_GONE, "set_serve_pet_gone_number"),
             (CONF_SERVE_MAX_OPEN, "set_serve_max_open_number"),
+            (CONF_OD_ENABLED, "set_on_demand_enabled_switch"),
+            (CONF_OD_MIN_OPEN, "set_on_demand_min_open_number"),
+            (CONF_OD_COOLDOWN, "set_on_demand_cooldown_number"),
         ):
             if key in sc:
                 cg.add(getattr(var, setter)(await cg.get_variable(sc[key])))
         cg.add(var.set_serve_rest_compartment(sc[CONF_SERVE_REST]))
         cg.add(var.set_serve_settle(sc[CONF_SERVE_SETTLE]))
+        cg.add(var.set_on_demand_hold(sc[CONF_OD_HOLD]))
+        cg.add(var.set_on_demand_rearm(sc[CONF_OD_REARM]))
     cg.add(var.set_thaw_threshold(config[CONF_THAW_THRESHOLD]))
     cg.add(var.set_thaw_lead(config[CONF_THAW_LEAD]))
     cg.add(var.set_pet_leave_time(config[CONF_PET_LEAVE_TIME]))

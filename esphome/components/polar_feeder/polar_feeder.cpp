@@ -116,6 +116,8 @@ FeedMode PolarFeeder::get_mode() const {
       return FeedMode::LID_ONLY;
     if (idx.has_value() && *idx == 2)
       return FeedMode::SERVE_AND_RETURN;
+    if (idx.has_value() && *idx == 3)
+      return FeedMode::SERVE_ON_DEMAND;
   }
   return FeedMode::ROTATE_AND_OPEN;
 }
@@ -305,10 +307,13 @@ void PolarFeeder::after_open_() {
   if (this->feed_serve_) {
     this->serve_advance_();
     this->serve_open_ms_ = millis();
-    this->serve_pet_seen_ = false;
+    this->serve_pet_seen_ = this->serve_beam_;  // the beam break that started it counts as the cat
+    if (this->serve_beam_)
+      this->last_pet_ms_ = this->serve_open_ms_;
   }
   this->lid_opened_trigger_.trigger(this->feed_compartment_);
-  this->set_state_(FeedState::ONGOING, this->feed_serve_     ? "serving: waiting for pet"
+  this->set_state_(FeedState::ONGOING, this->serve_beam_     ? "serving: pet eating"
+                                       : this->feed_serve_   ? "serving: waiting for pet"
                                        : this->feed_minutes_ == 0 ? "open until close"
                                                                   : "feeding");
 }
@@ -344,6 +349,7 @@ bool PolarFeeder::idle_close_(LidProfile profile, const char *why) {
   this->hold_active_ = false;
   this->close_then_rotate_ = false;
   this->close_profile_ = profile;
+  this->idle_close_running_ = true;
   this->power_on_();
   this->ir_(true);
   this->event_("%s", why);
@@ -388,7 +394,16 @@ void PolarFeeder::end_feed_(const char *result) {
   const int comp = this->feed_compartment_;
   this->event_("Feed finished: %s", result);
   this->feed_serve_ = false;
+  this->serve_beam_ = false;
   this->serve_returning_ = false;
+  // Any feed ending starts the on-demand cooldown (read only in serve_on_demand).
+  if (!this->idle_close_running_) {
+    this->od_cooldown_ = true;
+    this->od_end_ms_ = millis();
+  }
+  this->idle_close_running_ = false;
+  this->od_armed_ = false;
+  this->od_edge_active_ = false;
   this->set_state_(FeedState::IDLE, "idle");
   this->feed_end_trigger_.trigger(comp, std::string(result));
 }
@@ -529,6 +544,9 @@ void PolarFeeder::loop() {
       break;
   }
 
+  if (this->state_ == FeedState::IDLE)
+    this->on_demand_idle_(millis());  // fresh time: end_feed_() above may have stamped a later millis() than 'now'
+
   if (now - this->last_schedule_ms_ >= SCHEDULE_PERIOD_MS) {
     this->last_schedule_ms_ = now;
     this->schedule_tick_();
@@ -563,6 +581,10 @@ void PolarFeeder::schedule_tick_() {
   if (!this->grace_over_ && now - this->boot_ms_ >= this->boot_grace_ms_)
     this->grace_over_ = true;
   const bool in_grace = !this->grace_over_;
+  if (this->on_demand_mode_()) {
+    this->on_demand_status_(now);  // no clock schedule in this mode
+    return;
+  }
   if (this->serve_mode_()) {
     this->serve_schedule_tick_(t, in_grace);
     return;
@@ -723,7 +745,7 @@ uint32_t PolarFeeder::serve_minutes_ms_(number::Number *num, float def) const {
   return (uint32_t) (m * 60000.0f);
 }
 
-bool PolarFeeder::start_serve_(int occurrence_index) {
+bool PolarFeeder::start_serve_(int occurrence_index, bool beam) {
   if (this->serve_storage_count_() == 0) {
     this->event_("Serve refused: no storage compartment (rest compartment %d)", this->serve_rest_);
     return false;
@@ -732,13 +754,17 @@ bool PolarFeeder::start_serve_(int occurrence_index) {
   this->feed_serve_ = true;
   this->serve_returning_ = false;
   this->serve_pet_seen_ = false;
+  this->serve_beam_ = beam;
   this->serve_close_reason_ = "close requested";  // replaced by serve_close_() when it decides
   // minutes = 0: the generic ONGOING timer is not used; serve_ongoing_() decides when to close.
   if (!this->start_feed_(c, 0, -1, false, true)) {
     this->feed_serve_ = false;
+    this->serve_beam_ = false;
     return false;
   }
-  if (occurrence_index >= 0) {
+  if (beam) {
+    this->event_("Beam broken: serving compartment %d", c);
+  } else if (occurrence_index >= 0) {
     this->event_("Serve %d started: compartment %d", occurrence_index + 1, c);
   } else {
     this->event_("Serve now: compartment %d", c);
@@ -770,6 +796,11 @@ void PolarFeeder::serve_ongoing_(uint32_t now) {
   }
   if (open_for >= this->serve_minutes_ms_(this->serve_max_open_, 45.0f)) {
     this->serve_close_("max open time");
+  } else if (this->serve_beam_) {
+    // Stay open for the minimum eating time, then close once the beam has been clear for the "pet gone" time.
+    if (open_for >= this->serve_minutes_ms_(this->od_min_open_, 3.0f) &&
+        now - this->last_pet_ms_ >= this->serve_minutes_ms_(this->serve_pet_gone_, 2.0f))
+      this->serve_close_("pet gone");
   } else if (this->serve_pet_seen_) {
     if (now - this->last_pet_ms_ >= this->serve_minutes_ms_(this->serve_pet_gone_, 2.0f))
       this->serve_close_("pet gone");
@@ -820,6 +851,95 @@ void PolarFeeder::serve_schedule_tick_(const ESPTime &t, bool in_grace) {
     const int at = (now_min + in_min) % 1440;
     snprintf(buf, sizeof(buf), "serve at %02d:%02d (in %d min), compartment %d", at / 60, at % 60, in_min,
              this->serve_compartment_());
+  }
+  if (this->next_text_->state != buf)
+    this->next_text_->publish_state(buf);
+}
+
+// ----------------------------------------------------------------------------------------- serve_on_demand
+void PolarFeeder::on_demand_idle_(uint32_t now) {
+  if (!this->on_demand_active_()) {
+    if (this->ir_on_)
+      this->ir_(false);  // other modes: emitter only during feeds, as stock
+    this->od_lid_checked_ = false;
+    this->od_armed_ = false;
+    this->od_edge_active_ = false;
+    return;
+  }
+  // Works without a valid clock, so the grace latch cannot wait for schedule_tick_().
+  if (!this->grace_over_ && now - this->boot_ms_ >= this->boot_grace_ms_)
+    this->grace_over_ = true;
+  if (!this->grace_over_)
+    return;
+  if (!this->ir_on_) {
+    this->ir_(true);
+    this->od_armed_ = false;
+    this->od_edge_active_ = false;
+    return;
+  }
+  // The receiver reads "present" until the emitter has settled.
+  if (now - this->ir_on_since_ms_ < this->serve_settle_ms_)
+    return;
+  // A serve needs the lid known closed, but its state is unknown after a Stop all or a failed boot close (the sensor
+  // is high at both end stops). One anti-pinch close settles it; if the lid is already shut it only nudges the end stop.
+  if (!this->od_lid_checked_ && !this->lid_->is_closed() && !this->lid_->is_open() && !this->lid_->is_busy()) {
+    if (this->idle_close_(LidProfile::FEED, "On demand: confirming the lid is closed"))
+      this->od_lid_checked_ = true;
+    return;  // refused (fault or inhibited): tried again once that clears
+  }
+  if (this->od_cooldown_) {
+    if (now - this->od_end_ms_ < this->serve_minutes_ms_(this->od_cooldown_min_, 5.0f))
+      return;
+    this->od_cooldown_ = false;
+  }
+  const bool blocked = this->pet_present_();
+  if (!this->od_armed_) {
+    // Arm only after a clear beam: a cat still sitting there, or a beam that reads blocked permanently, never fires.
+    if (blocked) {
+      this->od_edge_active_ = false;
+    } else if (!this->od_edge_active_) {
+      this->od_edge_active_ = true;
+      this->od_edge_ms_ = now;
+    } else if (now - this->od_edge_ms_ >= this->od_rearm_ms_) {
+      this->od_armed_ = true;
+      this->od_edge_active_ = false;
+    }
+    return;
+  }
+  if (!blocked) {
+    this->od_edge_active_ = false;
+    return;
+  }
+  if (!this->od_edge_active_) {
+    this->od_edge_active_ = true;
+    this->od_edge_ms_ = now;
+    return;
+  }
+  if (now - this->od_edge_ms_ < this->od_hold_ms_)
+    return;
+  this->od_armed_ = false;  // one attempt per beam break, whatever happens next
+  this->od_edge_active_ = false;
+  if (!this->lid_->is_closed() || this->lid_->is_busy() || this->tray_->is_busy() || this->pending_goto_ != 0) {
+    this->event_("Beam broken: ignored (lid not closed, or a motor is busy)");
+    return;
+  }
+  if (!this->start_serve_(-1, true)) {
+    this->od_cooldown_ = true;  // refused (fault or inhibited): don't retry on every beam break
+    this->od_end_ms_ = millis();
+  }
+}
+
+void PolarFeeder::on_demand_status_(uint32_t now) {
+  if (this->next_text_ == nullptr || (now - this->last_next_ms_ < 30000 && !this->next_text_->state.empty()))
+    return;
+  this->last_next_ms_ = now;
+  char buf[64];
+  if (!this->on_demand_active_()) {
+    snprintf(buf, sizeof(buf), "on demand: off");
+  } else if (this->od_cooldown_) {
+    snprintf(buf, sizeof(buf), "on demand: cooling down, compartment %d next", this->serve_compartment_());
+  } else {
+    snprintf(buf, sizeof(buf), "on demand: compartment %d on beam break", this->serve_compartment_());
   }
   if (this->next_text_->state != buf)
     this->next_text_->publish_state(buf);
